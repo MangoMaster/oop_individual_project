@@ -3,7 +3,7 @@ MYOBJECTS=$(MYSOURCES:%.cpp=%.o)
 HEADERS=$(wildcard *.h)
 LIB=$(wildcard *.dll)
 INCLUDES=-Iz3/src/api/c++ -Iz3/src/api
-TARGET=a.exe 
+TARGET=DFMBSolver.exe 
 
 all: $(TARGET)
 
