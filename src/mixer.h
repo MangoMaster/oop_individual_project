@@ -44,6 +44,7 @@ class Mixer : public Droplet
     Droplet drop2;
     int mixTime;
 };
+
 }; // namespace DMFB
 
 #endif // MIXER_H_

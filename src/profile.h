@@ -49,9 +49,15 @@ public:
   {
     return time;
   }
+  int getEdgeNum() const
+  {
+    return 2 * length + 2 * width;
+  }
+  int getDropletNum() const;
+  int getMixerNum() const;
 
   /************************setter************************/
-  void addDroplet(const Droplet &d)
+  void addDroplet(const Droplet &d) // explicit
   {
     dropletVec.push_back(d);
   }

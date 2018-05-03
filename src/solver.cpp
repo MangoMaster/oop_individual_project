@@ -9,6 +9,8 @@ using namespace std;
 
 namespace DMFB
 {
+const int Solver::N9X[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+const int Solver::N9Y[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
 
 void Solver::solve()
 {
@@ -50,7 +52,7 @@ void Solver::_solve()
 {
     Formulator f(pf);
     f.formulate();
-    Prover p(f);
+    Prover p(pf, f);
     p.prove();
 }
 

@@ -42,6 +42,8 @@ private:
 
   const int MAXTIME = 20;
   const int MAXLENGTH = 8;
+  static const int N9X[8];
+  static const int N9Y[8];
 };
 
 /**
@@ -56,13 +58,12 @@ public:
 
   inline z3::context &getContext() const;
   inline const std::vector<z3::expr_vector> &getExprVector() const;
-  inline const int getNetNum() const;
-  inline const void getSizeNum(int &x, int &y) const;
-  inline const int getTNum() const;
+  const void computeDroplet(int &dimension1, int &dimension2, int droplet, int x, int y, int time) const;
   const void computeDroplet(int &dimension1, std::vector<int> &dimension2, int net, int x, int y, int time) const;
-  const void computeDetector(int &dimension1, int &dimension2, int net, int x, int y) const;
-  const void computeDispenser(int &dimension1, int &dimension2, int xEdge, int yEdge) const;
-  const void computeSinker(int &dimension1, int &dimension2, int xEdge, int yEdge) const;
+  const void computeDetector(int &dimension1, int &dimension2, int n, int x, int y) const;
+  const void computeDispenser(int &dimension1, int &dimension2, int net, int edge) const;
+  const void computeSinker(int &dimension1, int &dimension2, int edge) const;
+  const bool computeAroundChip(int x, int y, std::vector<int> edge) const;
   void formulate();
 
 private:
@@ -70,10 +71,7 @@ private:
   z3::context cxt;
   std::vector<z3::expr_vector> exprVec;
 
-  int netNum;
   int xNum, yNum;
-  int tNum;
-  int edgeNum;
 
   void formulateDroplet();
   void formulateDetector();
@@ -92,25 +90,26 @@ private:
 class Solver::Prover
 {
 public:
-  Prover(Formulator &f);
+  Prover(const Profile &p, const Formulator &f);
   ~Prover(){};
 
   void prove();
 
 private:
-  Formulator &formu;
+  const Profile &pf;
+  const Formulator &formu;
   z3::solver solv;
 
   z3::context &cxt;
   const std::vector<z3::expr_vector> &exprVec;
-  int netNum;
   int xNum, yNum;
-  int tNum;
 
-  void noOverlap();
+  void isBool();
+  void noSpaceOverlap();
+  void noTimeOverlap();
   void noSpaceNeighbor();
   void noTimeNeighbor();
-  void enoughSize();
+  void enoughNumber();
   void operationMovement();
   void operationMixing();
   void operationDetecting();
@@ -129,22 +128,6 @@ inline z3::context &Solver::Formulator::getContext() const
 inline const std::vector<z3::expr_vector> &Solver::Formulator::getExprVector() const
 {
   return this->exprVec;
-}
-
-inline const int Solver::Formulator::getNetNum() const
-{
-  return this->netNum;
-}
-
-inline const void Solver::Formulator::getSizeNum(int &x, int &y) const
-{
-  x = xNum;
-  y = yNum;
-}
-
-inline const int Solver::Formulator::getTNum() const
-{
-  return this->tNum;
 }
 
 }; // namespace DMFB

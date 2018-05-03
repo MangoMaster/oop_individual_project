@@ -16,11 +16,23 @@ class Droplet : public Object
   public:
     /*****************constructor and destructor********************/
     Droplet(const std::string &m = "", int n = 1, int t = 0)
-        : name(m), number(n), spawnTime(t){};
+        : name(m), number(n), spawnTime(t), sequenceNumber(sequence)
+    {
+        ++sequence;
+    }
     Droplet(int n) : name(""), number(n), spawnTime(0){};
     ~Droplet(){};
+    Droplet(const Droplet &d) 
+        : name(d.name), number(d.number), spawnTime(d.spawnTime), sequenceNumber(sequence)
+    {
+        ++sequence;
+    }
 
     /*********************getter**********************/
+    int getSequenceNumber() const
+    {
+        return this->sequenceNumber;
+    }
     int getNumber() const
     {
         return this->number;
@@ -58,10 +70,14 @@ class Droplet : public Object
     }
 
   private:
+    int sequenceNumber;
     std::string name;
     int number;
     int spawnTime;
+    static int sequence;
+
 };
+
 }; // namespace DMFB
 
 #endif // DROPLET_H_
