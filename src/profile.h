@@ -18,6 +18,7 @@ class Profile
 {
 public:
   /***************constructor and destructor***************/
+  Profile() : cfg(), length(0), width(0), time(0){};
   Profile(const Configuration &c) : cfg(c), length(0), width(0), time(0){};
   ~Profile(){};
   //Profile(Profile &);

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "prover.h"
+#include "solver.h"
 
 using namespace std;
 using namespace z3;
@@ -7,7 +7,7 @@ using namespace z3;
 namespace DMFB
 {
 
-void Prover::prove()
+void Solver::Prover::prove()
 {
     //TODO:
 }

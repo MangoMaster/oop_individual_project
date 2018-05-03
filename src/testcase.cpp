@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Solver.h"
+#include "solver.h"
 
 using namespace std;
 using namespace DMFB;
@@ -23,8 +23,7 @@ void example1()
 
 void example2()
 {
-    Configuration cfg;
-    Profile c(cfg);
+    Profile c;
     Droplet droplet1("droplet1");
     c.addDroplet(droplet1);
     c.addDroplet("droplet2", 2);

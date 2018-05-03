@@ -3,8 +3,6 @@
 #include <iostream>
 #include <cassert>
 #include "solver.h"
-#include "formulator.h"
-#include "prover.h"
 #include "z3++.h"
 
 using namespace std;
@@ -52,7 +50,7 @@ void Solver::_solve()
 {
     Formulator f(pf);
     f.formulate();
-    z3::context &c = const_cast<z3::context &>(f.getContext());
+    z3::context &c = f.getContext();
     Prover p(c);
     p.prove();
 }

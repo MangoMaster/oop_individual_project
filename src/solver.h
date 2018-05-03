@@ -37,9 +37,56 @@ class Solver
 
     void _solve();
 
+    class Formulator;
+    class Prover;
+
     const int MAXTIME = 20;
     const int MAXLENGTH = 8;
 };
+
+/**
+ * @brief Formulate configuration and profile into z3Solver context.
+ * 
+ */
+class Solver::Formulator
+{
+  public:
+    Formulator(const Profile &p) : pf(p), cxt(){};
+    ~Formulator(){};
+
+    inline z3::context &getContext() const;
+    void formulate();
+
+  private:
+    const Profile &pf;
+    z3::context cxt;
+
+    Formulator(Formulator &);
+    Formulator &operator=(Formulator &);
+};
+
+/**
+ * @brief prove the satisfiability using z3Solver solver.
+ * 
+ */
+class Solver::Prover
+{
+  public:
+    Prover(z3::context &c) : solv(c){};
+    ~Prover(){};
+
+    void prove();
+
+  private:
+    z3::solver solv;
+};
+
+/*******************functions********************/
+inline z3::context &Solver::Formulator::getContext() const
+{
+    return const_cast<z3::context &>(this->cxt);
+}
+
 }; // namespace DMFB
 
 #endif // SOLVER_H_

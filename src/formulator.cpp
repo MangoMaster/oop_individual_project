@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 #include <cassert>
-#include "formulator.h"
+#include "solver.h"
 #include "z3++.h"
 
 using namespace std;
@@ -11,7 +11,7 @@ using namespace z3;
 namespace DMFB
 {
 
-void Formulator::formulate()
+void Solver::Formulator::formulate()
 {
     int netNum = pf.getDropletVec().size() + pf.getMixerVec().size();
     int x, y;
