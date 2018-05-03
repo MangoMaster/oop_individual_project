@@ -50,8 +50,7 @@ void Solver::_solve()
 {
     Formulator f(pf);
     f.formulate();
-    z3::context &c = f.getContext();
-    Prover p(c);
+    Prover p(f);
     p.prove();
 }
 
