@@ -50,7 +50,7 @@ void Solver::Prover::noSpaceOverlap()
         for (int y = 0; y < yNum; ++y)
         {
             expr exprDetector = cxt.int_val(0);
-            for (int n = 0; n < pf.getDetectorVec().size(); ++n)
+            for (int n = 0; n < pf.getDetectorNum(); ++n)
             {
                 int dimension1, dimension2;
                 formu.computeDetector(dimension1, dimension2, n, x, y);
@@ -63,7 +63,7 @@ void Solver::Prover::noSpaceOverlap()
     for (int e = 0; e < pf.getEdgeNum(); ++e)
     {
         expr exprDispenserSinker = cxt.int_val(0);
-        for (int n = 0; n < pf.getDropletVec().size(); ++n)
+        for (int n = 0; n < pf.getDispenserNum(); ++n)
         {
             int dimension1, dimension2;
             formu.computeDispenser(dimension1, dimension2, n, e);
@@ -166,16 +166,58 @@ void Solver::Prover::noTimeNeighbor()
 
 void Solver::Prover::enoughNumber()
 {
+    // droplet
+    for (int d = 0; d < pf.getDropletNum() + pf.getMixerNum(); ++d)
+    {
+        expr exprEnough = cxt.int_val(0);
+        for (int x = 0; x < xNum; ++x)
+            for (int y = 0; y < yNum; ++y)
+                for (int t = 0; t < pf.getTime(); ++t)
+                {
+                    int dimension1, dimension2;
+                    formu.computeDroplet(dimension1, dimension2, d, x, y, t);
+                    exprEnough = exprEnough + exprVec[dimension1][dimension2];
+                }
+        solv.add(exprEnough >= 1);
+    }
+
     // detector
-    for (int det = 0; det < pf.getDetectorVec().size(); ++det)
+    for (int n = 0; n < pf.getDetectorVec().size(); ++n)
     {
         expr exprEnough = cxt.int_val(0);
         for (int x = 0; x < xNum; ++x)
             for (int y = 0; y < yNum; ++y)
             {
                 int dimension1, dimension2;
-                //formu.computeDetector(dimension1, dimension2, )
+                formu.computeDetector(dimension1, dimension2, n, x, y);
+                exprEnough = exprEnough + exprVec[dimension1][dimension2];
             }
+        solv.add(exprEnough == pf.getDetectorVec()[n].getNumber()); // 默认detector只有一个，可拓展
+    }
+
+    // dispenser
+    for (int n = 0; n < pf.getDispenserVec().size(); ++n)
+    {
+        expr exprEnough = cxt.int_val(0);
+        for (int edge = 0; edge < pf.getEdgeNum(); ++edge)
+        {
+            int dimension1, dimension2;
+            formu.computeDispenser(dimension1, dimension2, n, edge);
+            exprEnough = exprEnough + exprVec[dimension1][dimension2];
+        }
+        solv.add(exprEnough == pf.getDispenserVec()[n].getNumber());
+    }
+
+    // sinker
+    {
+        expr exprEnough = cxt.int_val(0);
+        for (int edge = 0; edge < pf.getEdgeNum(); ++edge)
+        {
+            int dimension1, dimension2;
+            formu.computeSinker(dimension1, dimension2, edge);
+            exprEnough = exprEnough + exprVec[dimension1][dimension2];
+        }
+        solv.add(exprEnough == pf.getSinkerNum());
     }
 }
 void Solver::Prover::operationMovement() {}

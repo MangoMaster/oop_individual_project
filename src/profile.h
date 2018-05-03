@@ -6,6 +6,7 @@
 #include "droplet.h"
 #include "mixer.h"
 #include "detector.h"
+#include "dispenser.h"
 #include "configuration.h"
 
 namespace DMFB
@@ -36,6 +37,14 @@ public:
   {
     return this->detectorVec;
   }
+  const std::vector<Dispenser> &getDispenserVec() const
+  {
+    return this->dispenserVec;
+  }
+  int getSinkerNum() const
+  {
+    return this->sinkerNum;
+  }
   const Configuration &getConfig() const
   {
     return this->cfg;
@@ -55,6 +64,8 @@ public:
   }
   int getDropletNum() const;
   int getMixerNum() const;
+  int getDetectorNum() const;
+  int getDispenserNum() const;
 
   /************************setter************************/
   void addDroplet(const Droplet &d) // explicit
@@ -94,6 +105,19 @@ public:
     Detector det(d, t);
     detectorVec.push_back(det);
   }
+  void addDispenser(const Dispenser &d)
+  {
+    dispenserVec.push_back(d);
+  }
+  void addDispenser(const Droplet &d, int n = 1, int t = 0)
+  {
+    Dispenser dis(d, n, t);
+    dispenserVec.push_back(dis);
+  }
+  void setSinkerNum(int n)
+  {
+    sinkerNum = n;
+  }
   void setSize(int l, int w)
   {
     length = l;
@@ -109,6 +133,8 @@ private:
   std::vector<Droplet> dropletVec;
   std::vector<Mixer> mixerVec;
   std::vector<Detector> detectorVec;
+  std::vector<Dispenser> dispenserVec;
+  int sinkerNum;
   int length;
   int width;
   int time;

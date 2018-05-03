@@ -15,7 +15,10 @@ namespace DMFB
 class Solver
 {
 public:
-  Solver(const Profile &p) : pf(p), objective(""){};
+  Solver(const Profile &p, const std::string &o = "") : pf(p), objective(o)
+  {
+    assert(o.compare("") == 0 || o.compare("prove") == 0 || o.compare("min time") == 0 || o.compare("min size") == 0);
+  }
   ~Solver(){};
 
   void solve();
@@ -61,7 +64,7 @@ public:
   const void computeDroplet(int &dimension1, int &dimension2, int droplet, int x, int y, int time) const;
   const void computeDroplet(int &dimension1, std::vector<int> &dimension2, int net, int x, int y, int time) const;
   const void computeDetector(int &dimension1, int &dimension2, int n, int x, int y) const;
-  const void computeDispenser(int &dimension1, int &dimension2, int net, int edge) const;
+  const void computeDispenser(int &dimension1, int &dimension2, int n, int edge) const;
   const void computeSinker(int &dimension1, int &dimension2, int edge) const;
   const bool computeAroundChip(int x, int y, std::vector<int> edge) const;
   void formulate();

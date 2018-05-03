@@ -18,12 +18,17 @@ class Droplet : public Object
     Droplet(const std::string &m = "", int n = 1, int t = 0)
         : name(m), number(n), spawnTime(t), sequenceNumber(sequence)
     {
+        assert(n >= 1);
+        assert(t >= 0);
         ++sequence;
     }
-    Droplet(int n) : name(""), number(n), spawnTime(0){};
+    Droplet(int n) : name(""), number(n), spawnTime(0)
+    {
+        assert(n >= 1);
+    }
     ~Droplet(){};
     Droplet(const Droplet &d) 
-        : name(d.name), number(d.number), spawnTime(d.spawnTime), sequenceNumber(sequence)
+        : name(d.name), number(d.number), spawnTime(d.spawnTime), sequenceNumber(d.sequenceNumber)
     {
         ++sequence;
     }
@@ -53,6 +58,7 @@ class Droplet : public Object
     }
     void setNumber(int n)
     {
+        assert(n >= 1);
         number = n;
     }
     void addNumber(int n)
@@ -61,11 +67,12 @@ class Droplet : public Object
     }
     void subtractNumber(int n)
     {
-        assert(number >= n);
+        assert(number > n);
         number -= n;
     }
     void setSpawnTime(int t)
     {
+        assert(t >= 0);
         spawnTime = t;
     }
 

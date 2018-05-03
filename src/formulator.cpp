@@ -57,7 +57,7 @@ void Solver::Formulator::formulateDroplet()
 void Solver::Formulator::formulateDetector()
 {
     z3::expr_vector detector(cxt);
-    for (int i = 0; i < pf.getDetectorVec().size(); ++i)
+    for (int i = 0; i < pf.getDetectorNum(); ++i)
         for (int j = 0; j < xNum; ++j)
             for (int k = 0; k < yNum; ++k)
             {
@@ -74,12 +74,12 @@ void Solver::Formulator::formulateDetector()
 void Solver::Formulator::formulateDispenser()
 {
     z3::expr_vector dispenser(cxt);
-    for (int i = 0; i < pf.getDropletVec().size(); ++i)
+    for (int i = 0; i < pf.getDispenserNum(); ++i)
     {
         for (int j = 0; j < pf.getEdgeNum(); ++j)
         {
             stringstream ss;
-            ss << "dispenser:net_" << i << "_edge_" << j;
+            ss << "dispenser:number_" << i << "_edge_" << j;
             expr tempExpr = cxt.int_const(ss.str().c_str());
             dispenser.push_back(tempExpr);
         }
@@ -129,18 +129,18 @@ const void Solver::Formulator::computeDroplet(int &dimension1, std::vector<int> 
 const void Solver::Formulator::computeDetector(int &dimension1, int &dimension2, int n, int x, int y) const
 {
     dimension1 = 1;
-    assert(n >= 0 && n < pf.getDetectorVec().size());
+    assert(n >= 0 && n < pf.getDetectorNum());
     assert(x >= 0 && x < xNum);
     assert(y >= 0 && y < yNum);
     dimension2 = n * xNum * yNum + x * yNum + y;
 }
 
-const void Solver::Formulator::computeDispenser(int &dimension1, int &dimension2, int net, int edge) const
+const void Solver::Formulator::computeDispenser(int &dimension1, int &dimension2, int n, int edge) const
 {
     dimension1 = 2;
-    assert(net >= 0 && net < pf.getDropletVec().size());
+    assert(n >= 0 && n < pf.getDispenserNum());
     assert(edge >= 0 && edge < pf.getEdgeNum());
-    dimension2 = net * pf.getEdgeNum() + edge;
+    dimension2 = n * pf.getEdgeNum() + edge;
 }
 const void Solver::Formulator::computeSinker(int &dimension1, int &dimension2, int edge) const
 {

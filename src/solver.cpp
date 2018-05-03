@@ -16,6 +16,7 @@ void Solver::solve()
 {
     assert(objective.compare("") != 0);
     assert(!pf.getDropletVec().empty());
+    assert(pf.getDropletVec().size() == pf.getDispenserVec().size());
     if (objective.compare("prove") == 0)
     {
         int pfX, pfY;
@@ -46,6 +47,8 @@ void Solver::solve()
                 _solve();
             }
     }
+    else
+        assert(false);
 }
 
 void Solver::_solve()

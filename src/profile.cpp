@@ -21,5 +21,20 @@ int Profile::getMixerNum() const
     return mixerNum;
 }
 
+int Profile::getDetectorNum() const
+{
+    int detectorNum = 0;
+    for (int i = 0; i < detectorVec.size(); ++i)        
+        detectorNum += detectorVec[i].getNumber();
+    return detectorNum;
+}
+
+int Profile::getDispenserNum() const
+{
+    int dispenserNum = 0;
+    for (int i = 0; i < dispenserVec.size(); ++i)
+        dispenserNum += dispenserVec[i].getNumber();
+    return dispenserNum;
+}
 
 } // namespace DMFB

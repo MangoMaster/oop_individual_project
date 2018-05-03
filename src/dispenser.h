@@ -1,23 +1,22 @@
-#ifndef DETECTOR_H_
-#define DETECTOR_H_
+#ifndef DISPENSER_H_
+#define DISPENSER_H_
 
-#include <string>
 #include "object.h"
 #include "droplet.h"
 
 namespace DMFB
 {
 /**
- * @brief Detector (detectedDrop, detectTime)
+ * @brief Dispenser (dispensedDrop, numberOfDispenser, spawnTime)
  * 
  */
-class Detector : public Object
+class Dispenser : public Object
 {
   public:
     /********************constructor and destructor********************/
-    Detector(const Droplet &d, int n = 0, int t = 0)
-        : drop(d), number(n), detectTime(t){};
-    ~Detector(){};  
+    Dispenser(const Droplet &d, int n = 1, int t = 0)
+        : drop(d), number(n), spawnTime(t){};
+    ~Dispenser(){};
 
     /**************************getter************************/
     const std::string &getName() const
@@ -32,9 +31,9 @@ class Detector : public Object
     {
         return this->number;
     }
-    int getDetectTime() const
+    int getSpawnTime() const
     {
-        return this->detectTime;
+        return this->spawnTime;
     }
 
     /***************************setter*********************/
@@ -42,16 +41,17 @@ class Detector : public Object
     {
         number = n;
     }
-    void setDetectTime(int t)
+    void setSpawnTime(int t)
     {
-        detectTime = t;
+        spawnTime = t;
     }
 
   private:
     Droplet drop; // 为什么不能用const？
     int number;
-    int detectTime;
+    int spawnTime;
 };
-}; // namespace DMFB
 
-#endif // DETECTOR_H_
+} // namespace DMFB
+
+#endif // DISPENSER_H_
