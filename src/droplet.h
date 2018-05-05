@@ -2,39 +2,25 @@
 #define DROPLET_H_
 
 #include <string>
-#include <cassert>
-#include "object.h"
 
 namespace DMFB
 {
 /**
- * @brief Droplet (name, number, spawnTime)
+ * @brief Droplet (name)
  * 
  */
-class Droplet : public Object
+class Droplet
 {
   public:
     /*****************constructor and destructor********************/
-    Droplet(const std::string &m, int n = 1, int t = 0)
-        : name(m), number(n), spawnTime(t)
-    {
-        assert(n >= 1);
-        assert(t >= 0);
-    }
+    Droplet(const std::string &m = "")
+        : name(m), sequenceNum(-1){};
     ~Droplet(){};
 
     /*********************getter**********************/
-    int getNumber() const
-    {
-        return this->number;
-    }
     const std::string &getName() const
     {
         return this->name;
-    }
-    int getSpawnTime() const
-    {
-        return this->spawnTime;
     }
 
     /*********************setter**********************/
@@ -42,31 +28,13 @@ class Droplet : public Object
     {
         name = m;
     }
-    void setNumber(int n)
-    {
-        assert(n >= 1);
-        number = n;
-    }
-    void addNumber(int n)
-    {
-        number += n;
-    }
-    void subtractNumber(int n)
-    {
-        assert(number > n);
-        number -= n;
-    }
-    void setSpawnTime(int t)
-    {
-        assert(t >= 0);
-        spawnTime = t;
-    }
+
+    /******************friend**********************/
+    friend class Profile;
 
   private:
     std::string name;
-    int number;
-    int spawnTime;
-
+    int sequenceNum; // used by class Profile to identify
 };
 
 }; // namespace DMFB

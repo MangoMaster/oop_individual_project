@@ -1,45 +1,52 @@
 #ifndef MIXER_H_
 #define MIXER_H_
 
+#include <string>
 #include "droplet.h"
 
 namespace DMFB
 {
 /**
- * @brief Mixer (mixedDroplet1, mixedDroplet2, mixTime, dropletSelf) is-a Droplet
+ * @brief Mixer (mixedDroplet1, mixedDroplet2, mixTime, name) is-a droplet
  * 
  */
 class Mixer : public Droplet
 {
   public:
-    Mixer(const Droplet &d1, const Droplet &d2, int t1, const std::string &m, int n = 1, int t2 = 0)
-        : drop1(d1), drop2(d2), mixTime(t1), Droplet(m, n, t2){};
+    Mixer(const Droplet &d1, const Droplet &d2, int t1, const std::string &m = "")
+        : drop1(d1), drop2(d2), mixTime(t1), Droplet(m), sequenceNumProducedDroplet(-1){};
     ~Mixer(){};
 
-    void getDroplet(Droplet &d1, Droplet &d2)
+    /************************getter*************************/
+    const Droplet &getDroplet1() const
     {
-        d1 = drop1;
-        d2 = drop2;
+        return drop1;
     }
-    int getMixTime()
+    const Droplet &getDroplet2() const
+    {
+        return drop2;
+    }
+    int getMixTime() const
     {
         return mixTime;
     }
 
-    void setDroplet(const Droplet &d1, const Droplet &d2)
-    {
-        drop1 = d1;
-        drop2 = d2;
-    }
+    /***************************setter***********************/
     void setMixTime(int t)
     {
         mixTime = t;
     }
 
+    /*************************friend***********************/
+    friend class Profile;
+
   private:
-    Droplet drop1;
-    Droplet drop2;
+    const Droplet &drop1;
+    const Droplet &drop2;
     int mixTime;
+    int sequenceNumProducedDroplet; // used by class Profile to identify the droplet produced by this mixer.
+                                    // sequenceNum identify its number in the vector (dropletVec or mixerVec)
+                                    // sequenceNumProducedDroplet identify its number in dropletVec
 };
 
 }; // namespace DMFB

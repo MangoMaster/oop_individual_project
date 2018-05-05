@@ -2,7 +2,6 @@
 #define DETECTOR_H_
 
 #include <string>
-#include "object.h"
 #include "droplet.h"
 
 namespace DMFB
@@ -11,22 +10,18 @@ namespace DMFB
  * @brief Detector (detectedDrop, detectTime)
  * 
  */
-class Detector : public Object
+class Detector
 {
   public:
     /********************constructor and destructor********************/
-    Detector(const Droplet &d, int n = 0, int t = 0)
-        : drop(d), number(n), detectTime(t){};
-    ~Detector(){};  
+    Detector(const Droplet &d, int t = 0)
+        : drop(d), detectTime(t), sequenceNum(-1){};
+    ~Detector(){};
 
     /**************************getter************************/
-    const std::string &getName() const
+    const Droplet &getDroplet() const
     {
-        return this->drop.getName();
-    }
-    int getNumber() const
-    {
-        return this->number;
+        return this->drop;
     }
     int getDetectTime() const
     {
@@ -34,19 +29,18 @@ class Detector : public Object
     }
 
     /***************************setter*********************/
-    void setNumber(int n)
-    {
-        number = n;
-    }
     void setDetectTime(int t)
     {
         detectTime = t;
     }
 
+    /**********************friend*********************/
+    friend class Profile;
+
   private:
-    Droplet drop; // 为什么不能用const？
-    int number;
+    const Droplet &drop;
     int detectTime;
+    int sequenceNum; // used by class Profile to identify
 };
 }; // namespace DMFB
 

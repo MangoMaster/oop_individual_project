@@ -6,19 +6,20 @@
 #include "z3++.h"
 
 using namespace std;
+using namespace z3;
 
 namespace DMFB
 {
-const int Solver::N9X[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
-const int Solver::N9Y[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
-const int Solver::N5X[4] = {-1, 0, 1, 0};
-const int Solver::N5Y[4] = {0, 1, 0, -1};
+
+Solver::Solver(const Profile &p, const std::string &o /* = ""*/)
+    : pf(p), objective(o), cxt(), exprVec(cxt), solv(cxt)
+{
+    assert(o.compare("") == 0 || o.compare("prove") == 0 || o.compare("min time") == 0 || o.compare("min size") == 0);
+}
 
 void Solver::solve()
 {
-    assert(objective.compare("") != 0);
-    assert(!pf.getDropletVec().empty());
-    assert(pf.getDropletVec().size() == pf.getDispenserVec().size());
+    checkReadyForSolve();
     if (objective.compare("prove") == 0)
     {
         int pfX, pfY;
@@ -61,8 +62,13 @@ void Solver::_solve()
     p.prove();
 }
 
-void Solver::print()
+void Solver::checkReadyForSolve()
 {
+    assert(objective.compare("") != 0);
+    assert(pf.getDropletNum() != 0);
+    // all droplets are either produced by a dispenser or produced by a mixer
+    for (int i = 0; i < pf.getDropletNum(); ++i)
+        assert(pf.findDispenserOfDroplet(i) >= 0 || pf.findMixerAsDroplet(i) >= 0);
 }
 
 } // namespace DMFB

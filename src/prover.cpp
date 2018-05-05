@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
-#include "solver.h"
+#include "prover.h"
 
 using namespace std;
 using namespace z3;
@@ -9,18 +9,23 @@ using namespace z3;
 namespace DMFB
 {
 
-Solver::Prover::Prover(const Profile &p, const Formulator &f)
+const int Prover::N9X[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+const int Prover::N9Y[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
+const int Prover::N5X[4] = {-1, 0, 1, 0};
+const int Prover::N5Y[4] = {0, 1, 0, -1};
+
+Prover::Prover(const Profile &p, const Formulator &f)
     : pf(p), formu(f), cxt(f.getContext()), solv(f.getContext()), exprVec(f.getExprVector())
 {
     pf.getSize(xNum, yNum);
 }
 
-void Solver::Prover::prove()
+void Prover::prove()
 {
     //TODO:
 }
 
-void Solver::Prover::isBool()
+void Prover::isBool()
 {
     // 0-false  1-true
     for (int i = 0; i < exprVec.size(); ++i)
@@ -28,7 +33,7 @@ void Solver::Prover::isBool()
             solv.add(exprVec[i][j] == 0 || exprVec[i][j] == 1);
 }
 
-void Solver::Prover::noSpaceOverlap()
+void Prover::noSpaceOverlap()
 {
     // droplet
     for (int x = 0; x < xNum; ++x)
@@ -76,7 +81,7 @@ void Solver::Prover::noSpaceOverlap()
     }
 }
 
-void Solver::Prover::noTimeOverlap()
+void Prover::noTimeOverlap()
 {
     //droplet (not mixer)
     for (int n = 0; n < pf.getDropletNum(); ++n)
@@ -94,7 +99,7 @@ void Solver::Prover::noTimeOverlap()
         }
 }
 
-void Solver::Prover::noSpaceNeighbor()
+void Prover::noSpaceNeighbor()
 {
     // N-9 neighbor
     for (int d = 0; d < pf.getDropletNum() + pf.getMixerNum(); ++d)
@@ -128,7 +133,7 @@ void Solver::Prover::noSpaceNeighbor()
     // detector
 }
 
-void Solver::Prover::noTimeNeighbor()
+void Prover::noTimeNeighbor()
 {
     // N-9 neighbor
     for (int d = 0; d < pf.getDropletNum() + pf.getMixerNum(); ++d)
@@ -167,7 +172,7 @@ void Solver::Prover::noTimeNeighbor()
     // N-5 neighbor
 }
 
-void Solver::Prover::enoughNumber()
+void Prover::enoughNumber()
 {
     // droplet
     for (int d = 0; d < pf.getDropletNum() + pf.getMixerNum(); ++d)
@@ -224,7 +229,7 @@ void Solver::Prover::enoughNumber()
     }
 }
 
-void Solver::Prover::operationMovement()
+void Prover::operationMovement()
 {
 
     for (int d = 0; d < pf.getDropletNum(); ++d)
@@ -282,7 +287,7 @@ void Solver::Prover::operationMovement()
             }
 }
 
-void Solver::Prover::operationDisappear()
+void Prover::operationDisappear()
 {
     for (int x = 0; x < xNum; ++x)
         for (int y = 0; y < yNum; ++y)
@@ -334,20 +339,20 @@ void Solver::Prover::operationDisappear()
         }
 }
 
-void Solver::Prover::operationMixing() {}
-void Solver::Prover::operationDetecting()
+void Prover::operationMixing() {}
+void Prover::operationDetecting()
 {
     for (int n = 0; n < pf.getDetectorNum(); ++n)
         for (int t = 0; t < pf.getTime(); ++t)
-        for (int x = 0; x < xNum; ++x)
-        for (int y = 0; y < yNum; ++y)
-        {
-            int dimension1, dimension2;
-            formu.computeDetector(dimension1, dimension2, n, x, y);
-            solv.add(exprVec)
-        }
+            for (int x = 0; x < xNum; ++x)
+                for (int y = 0; y < yNum; ++y)
+                {
+                    int dimension1, dimension2;
+                    formu.computeDetector(dimension1, dimension2, n, x, y);
+                    solv.add(exprVec)
+                }
 }
 
-void Solver::Prover::meetObjective() {}
+void Prover::meetObjective() {}
 
 } // namespace DMFB

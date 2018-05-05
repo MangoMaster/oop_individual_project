@@ -1,31 +1,27 @@
 #ifndef DISPENSER_H_
 #define DISPENSER_H_
 
-#include "object.h"
+#include <vector>
 #include "droplet.h"
 
 namespace DMFB
 {
 /**
- * @brief Dispenser (dispensedDrop, numberOfDispenser, spawnTime)
+ * @brief Dispenser (dispensedDropVec, spawnTime)
  * 
  */
-class Dispenser : public Object
+class Dispenser
 {
   public:
     /********************constructor and destructor********************/
-    Dispenser(const Droplet &d, int n = 1, int t = 0)
-        : drop(d), number(n), spawnTime(t){};
+    Dispenser(const std::vector<Droplet> &d, int t = 0)
+        : drops(d), spawnTime(t), sequenceNum(-1){};
     ~Dispenser(){};
 
     /**************************getter************************/
-    const std::string &getName() const
+    const std::vector<Droplet> &getDropletVec() const
     {
-        return this->drop.getName();
-    }
-    int getNumber() const
-    {
-        return this->number;
+        return this->drops;
     }
     int getSpawnTime() const
     {
@@ -33,19 +29,18 @@ class Dispenser : public Object
     }
 
     /***************************setter*********************/
-    void setNumber(int n)
-    {
-        number = n;
-    }
     void setSpawnTime(int t)
     {
         spawnTime = t;
     }
 
+    /**********************friend***********************/
+    friend class Profile;
+
   private:
-    Droplet drop; // 为什么不能用const？
-    int number;
+    const std::vector<Droplet> &drops;
     int spawnTime;
+    int sequenceNum; // used by class Profile to identify
 };
 
 } // namespace DMFB
