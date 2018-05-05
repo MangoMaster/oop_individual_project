@@ -1,5 +1,6 @@
 #include <sstream>
 #include <string>
+#include <vector>
 #include <cassert>
 #include "formulator.h"
 #include "z3++.h"
@@ -9,14 +10,16 @@ using namespace z3;
 
 namespace DMFB
 {
-Formulator::Formulator(const Profile &p) : pf(p), cxt()
+Formulator::Formulator(const Profile &p, z3::context &c, z3::expr_vector &ev)
+    : pf(p), cxt(c), exprVec(ev)
 {
-    pf.getSize(xNum, yNum);
+    exprVec.clear();
 }
 
 void Formulator::formulate()
 {
     formulateDroplet();
+    formulateMixer();
     formulateDetector();
     formulateDispenser();
     formulateSinker();
@@ -24,148 +27,105 @@ void Formulator::formulate()
 
 void Formulator::formulateDroplet()
 {
-    z3::expr_vector droplet(cxt);
+    dropletStartSequenceNum = exprVec.size();
     for (int i = 0; i < pf.getDropletNum(); ++i)
-        for (int j = 0; j < xNum; ++j)
-            for (int k = 0; k < yNum; ++k)
-                for (int l = 0; l < pf.getTime(); ++l)
-                {
-                    stringstream ss;
-                    ss << "droplet:number_" << i
-                       << "_position_" << j << "_" << k
-                       << "_time_" << l;
-                    expr tempExpr = cxt.int_const(ss.str().c_str());
-                    droplet.push_back(tempExpr);
-                }
-    for (int i = 0; i < pf.getMixerNum(); ++i)
-        for (int j = 0; j < xNum; ++j)
-            for (int k = 0; k < yNum; ++k)
-                for (int l = 0; l < pf.getTime(); ++l)
-                {
-                    stringstream ss;
-                    ss << "mixer:number_" << i
-                       << "_position_" << j << "_" << k
-                       << "_time_" << l;
-                    expr tempExpr = cxt.int_const(ss.str().c_str());
-                    droplet.push_back(tempExpr);
-                }
+        for (int j = 0; j < pf.getSize(); ++j)
+            for (int k = 0; k < pf.getTime(); ++k)
+            {
+                stringstream ss;
+                ss << "droplet:number_" << i
+                   << "_position_" << j
+                   << "_time_" << k;
+                // use int_const instead of bool_const for convenience
+                exprVec.push_back(cxt.int_const(ss.str().c_str()));
+            }
+}
 
-    exprVec.push_back(droplet);
+void Formulator::formulateMixer()
+{
+    mixerStartSequenceNum = exprVec.size();
+    for (int i = 0; i < pf.getMixerNum(); ++i)
+        for (int j = 0; j < pf.getsize(); ++j)
+            for (int k = 0; k < pf.getTime(); ++k)
+            {
+                stringstream ss;
+                ss << "mixer:number_" << i
+                   << "_position_" << j
+                   << "_time<" << k;
+                exprVec.push_back(cxt.int_const(ss.str().c_str()));
+            }
 }
 
 void Formulator::formulateDetector()
 {
-    z3::expr_vector detector(cxt);
+    detectorStartSequenceNum = exprVec.size();
     for (int i = 0; i < pf.getDetectorNum(); ++i)
-        for (int j = 0; j < xNum; ++j)
-            for (int k = 0; k < yNum; ++k)
-            {
-                stringstream ss;
-                ss << "detector:number_" << i
-                   << "_position_" << j << "_" << k;
-                expr tempExpr = cxt.int_const(ss.str().c_str());
-                detector.push_back(tempExpr);
-            }
-
-    exprVec.push_back(detector);
+        for (int j = 0; j < pf.getSize(); ++j)
+        {
+            stringstream ss;
+            ss << "detector:number_" << i
+               << "_position_" << j;
+            exprVec.push_back(cxt.int_const(ss.str().c_str()));
+        }
 }
 
 void Formulator::formulateDispenser()
 {
-    z3::expr_vector dispenser(cxt);
+    dispenserStartSequenceNum = exprVec.size();
     for (int i = 0; i < pf.getDispenserNum(); ++i)
-    {
         for (int j = 0; j < pf.getEdgeNum(); ++j)
         {
             stringstream ss;
             ss << "dispenser:number_" << i << "_edge_" << j;
-            expr tempExpr = cxt.int_const(ss.str().c_str());
-            dispenser.push_back(tempExpr);
+            exprVec.push_back(cxt.int_const(ss.str().c_str()));
         }
-    }
-
-    exprVec.push_back(dispenser);
 }
 
 void Formulator::formulateSinker()
 {
-    z3::expr_vector sinker(cxt);
+    sinkerStartSequenceNum = exprVec.size();
     for (int i = 0; i < pf.getEdgeNum(); ++i)
     {
         stringstream ss;
         ss << "sinker:edge_" << i;
-        expr tempExpr = cxt.int_const(ss.str().c_str());
-        sinker.push_back(tempExpr);
+        exprVec.push_back(cxt.int_const(ss.str().c_str()));
     }
-
-    exprVec.push_back(sinker);
 }
 
-const void Formulator::computeDroplet(int &dimension1, int &dimension2, int droplet, int x, int y, int t) const
+int Formulator::computeDroplet(int dropletSequenceNum, int position, int time) const
 {
-    dimension1 = 0;
-    assert(droplet >= 0 && droplet < pf.getDropletNum() + pf.getMixerNum());
-    assert(x >= 0 && x < xNum);
-    assert(y >= 0 && y < yNum);
-    assert(t >= 0 && t < pf.getTime());
-    dimension2 = droplet * xNum * yNum * pf.getTime() + x * yNum * pf.getTime() + y * pf.getTime() + t;
+    assert(dropletSequenceNum >= 0 && dropletSequenceNum < pf.getDropletNum());
+    assert(position >= 0 && position < pf.getSize());
+    assert(time >= 0 && time < pf.getTime());
+    return dropletStartSequenceNum + dropletSequenceNum * pf.getSize() * pf.getTime() + position * pf.getTime() + time;
 }
 
-const void Formulator::computeDroplet(int &dimension1, std::vector<int> &dimension2, int net, int x, int y, int t) const
+int Formulator::computeMixer(int mixerSequenceNum, int position, int time) const
 {
-    dimension1 = 0;
-    assert(net >= 0 && net < pf.getDropletVec().size() + pf.getMixerVec().size());
-    assert(x >= 0 && x < xNum);
-    assert(y >= 0 && y < yNum);
-    assert(t >= 0 && t < pf.getTime());
-    int dimension2First = 0;
-    for (int i = 0; i < net; ++i)
-        dimension2First += pf.getDropletVec()[i].getNumber() * xNum * yNum * pf.getTime();
-    for (int i = 0; i < pf.getDropletVec()[net].getNumber(); ++i)
-        dimension2.push_back(dimension2First + i * xNum * yNum * pf.getTime());
+    assert(mixerSequenceNum >= 0 && mixerSequenceNum < pf.getMixerNum());
+    assert(position >= 0 && position < pf.getSize());
+    assert(time >= 0 && time < pf.getTime());
+    return mixerStartSequenceNum + mixerSequenceNum * pf.getSize() * pf.getTime() + position * pf.getTime() + time;
 }
 
-const void Formulator::computeDetector(int &dimension1, int &dimension2, int n, int x, int y) const
+int Formulator::computeDetector(int detectorSequenceNum, int position) const
 {
-    dimension1 = 1;
-    assert(n >= 0 && n < pf.getDetectorNum());
-    assert(x >= 0 && x < xNum);
-    assert(y >= 0 && y < yNum);
-    dimension2 = n * xNum * yNum + x * yNum + y;
+    assert(detectorSequenceNum >= 0 && detectorSequenceNum < pf.getDetectorNum());
+    assert(position >= 0 && position < pf.getSize());
+    return detectorStartSequenceNum + detectorSequenceNum * pf.getSize() + position;
 }
 
-const void Formulator::computeDispenser(int &dimension1, int &dimension2, int n, int edge) const
+int Formulator::computeDispenser(int dispenserSequenceNum, int edge) const
 {
-    dimension1 = 2;
-    assert(n >= 0 && n < pf.getDispenserNum());
+    assert(dispenserSequenceNum >= 0 && dispenserSequenceNum < pf.getDispenserNum());
     assert(edge >= 0 && edge < pf.getEdgeNum());
-    dimension2 = n * pf.getEdgeNum() + edge;
-}
-const void Formulator::computeSinker(int &dimension1, int &dimension2, int edge) const
-{
-    dimension1 = 3;
-    assert(edge >= 0 && edge < pf.getEdgeNum());
-    dimension2 = edge;
+    return dispenserStartSequenceNum + dispenserSequenceNum * pf.getEdgeNum() + edge;
 }
 
-const bool Formulator::computeAroundChip(int x, int y, vector<int> edge) const
+int Formulator::computeSinker(int edge) const
 {
-    // 从原点开始顺时针排序
-    assert(x >= 0 && x < xNum && y >= 0 && y < yNum);
-    bool aroundChip = false;
-    if (x == 0)
-        edge.push_back(y);
-    else if (x == xNum - 1)
-        edge.push_back(yNum + xNum + yNum - 1 - y);
-    // 注意不是else if
-    if (y == yNum - 1)
-        edge.push_back(yNum + x);
-    else if (y == 0)
-        edge.push_back(yNum + xNum + yNum + xNum - 1 - x);
-    if (edge.empty())
-        return false;
-    else
-        return true;
+    assert(edge >= 0 && edge < pf.getEdgeNum());
+    return sinkerStartSequenceNum + edge;
 }
 
 } // namespace DMFB

@@ -41,7 +41,7 @@ class Mixer : public Droplet
     friend class Profile;
 
   private:
-    const Droplet &drop1;
+    const Droplet &drop1; // 为什么不能用const
     const Droplet &drop2;
     int mixTime;
     int sequenceNumProducedDroplet; // used by class Profile to identify the droplet produced by this mixer.

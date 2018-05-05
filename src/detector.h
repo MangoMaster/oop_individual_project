@@ -38,7 +38,7 @@ class Detector
     friend class Profile;
 
   private:
-    const Droplet &drop;
+    const Droplet &drop; // 为什么不能用const
     int detectTime;
     int sequenceNum; // used by class Profile to identify
 };

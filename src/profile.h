@@ -63,6 +63,12 @@ public:
   // given sequenceNum in dropletVec, return sequenceNum in dispenserVec or -1
   int findDispenserOfDroplet(int dropletSequenceNum) const;
 
+  /*******************computer***************************/
+  inline int computePosition(int x, int y) const;
+  inline void computeXY(int &x, int &y, int position) const;
+  // given position, compute its edge (if existed)
+  void computeAroundChip(int position, std::vector<int> &edge) const;
+
 private:
   std::vector<Droplet> dropletVec; // 已自动包括mixer生成的droplet
   std::vector<Mixer> mixerVec;
@@ -159,6 +165,21 @@ inline void Profile::setTime(int t)
 {
   time = t;
 }
+
+inline int Profile::computePosition(int x, int y) const
+{
+  assert(x >= 0 && x < length && y >= 0 && y < width);
+  // position 从左上角开始，一行一行排序
+  return y * length + x;
+}
+inline void Profile::computeXY(int &x, int &y, int position) const
+{
+  assert(position >= 0 && position < getSize());
+  // position 从左上角开始，一行一行排序
+  x = position % length;
+  y = position / length;
+}
+
 } // namespace DMFB
 
 #endif // PROFILE_H_

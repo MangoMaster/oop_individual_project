@@ -61,12 +61,11 @@ void Profile::addDispenser(Dispenser &d)
     dispenserVec.push_back(d);
 }
 
-void Profile::addDispenser(const vector<Droplet> &d, int t = 0)
+void Profile::addDispenser(const vector<Droplet> &d, int t /* = 0*/)
 {
     Dispenser dis(d, t);
     dispenserVec.push_back(dis);
 }
-
 
 // given droplet, find the mixer that will accept it (if existed)
 // given sequenceNum in dropletVec, return sequenceNum in mixerVec or -1
@@ -108,4 +107,23 @@ int Profile::findDispenserOfDroplet(int dropletSequenceNum) const
                 return i;
     return -1;
 }
+
+void Profile::computeAroundChip(int position, std::vector<int> &edge) const
+{
+    assert(position >= 0 && position < getSize());
+    // position 从左上角开始，一行一行排序
+    // edge 从左上角开始，顺时针排序
+    if (position < length) // 上方一行edge
+        edge.push_back(position);
+    for (int y = 0; y < width; ++y)
+        if (position == y * length + length - 1) // 右方一列edge
+            edge.push_back(length + y);
+    // 注意是if不是else if
+    if (position >= length * width - length) // 下方一行edge
+        edge.push_back(length + width + length * width - 1 - position);
+    for (int y = 0; y < width; ++y)
+        if (position == y * length) // 左方一列edge
+            edge.push_back(length + width + length + width - y - 1);
+}
+
 } // namespace DMFB

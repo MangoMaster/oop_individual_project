@@ -12,39 +12,43 @@ namespace DMFB
  */
 class Prover
 {
-  public:
-    Prover(const Profile &p, const Formulator &f);
-    ~Prover(){};
+public:
+  /******************constructor and destructor********************/
+  Prover(const Profile &p, const z3::expr_vector &ev, const Formulator &f, z3::context &c, z3::solver &s);
+  ~Prover(){};
 
-    void prove();
+  /************************main function***************************/
+  void prove();
 
-  private:
-    const Profile &pf;
-    const Formulator &formu;
+private:
+  const Profile &pf;
+  const z3::expr_vector &exprVec;
+  const Formulator &formu;
+  z3::context &cxt;
+  z3::solver &solv;
 
-    z3::context &cxt;
-    const std::vector<z3::expr_vector> &exprVec;
-    int xNum, yNum;
+  /***********************assistant function**********************/
+  void isBool();
+  void noSpaceOverlap();
+  void noTimeOverlap();
+  void noN9SpaceNeighbor();
+  void noN5SpaceNeighbor();
+  void noN9TimeNeighbor();
+  void noN5TimeNeighbor();
+  void enoughNumber();
+  void operationMovement();
+  void operationDisappear();
+  void operationMixing();
+  void operationDetecting();
+  void meetObjective();
 
-    void isBool();
-    void noSpaceOverlap();
-    void noTimeOverlap();
-    void noSpaceNeighbor();
-    void noTimeNeighbor();
-    void enoughNumber();
-    void operationMovement();
-    void operationDisappear();
-    void operationMixing();
-    void operationDetecting();
-    void meetObjective();
+  static const int N9X[8];
+  static const int N9Y[8];
+  static const int N5X[4];
+  static const int N5Y[4];
 
-    static const int N9X[8];
-    static const int N9Y[8];
-    static const int N5X[4];
-    static const int N5Y[4];
-
-    Prover(Prover &);
-    Prover &operator=(Prover &);
+  Prover(Prover &);
+  Prover &operator=(Prover &);
 };
 
 } // namespace DMFB

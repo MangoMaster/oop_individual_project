@@ -14,46 +14,43 @@ namespace DMFB
  */
 class Formulator
 {
-  public:
-    Formulator(const Profile &p, z3::context &c) : pf(p), cxt(c);
-    ~Formulator(){};
+public:
+  /*********************constructor and destructor******************/
+  Formulator(const Profile &p, z3::context &c, z3::expr_vector &ev);
+  ~Formulator(){};
 
-    inline z3::context &getContext() const;
-    inline const std::vector<z3::expr_vector> &getExprVector() const;
-    const void computeDroplet(int &dimension1, int &dimension2, int droplet, int x, int y, int time) const;
-    const void computeDroplet(int &dimension1, std::vector<int> &dimension2, int net, int x, int y, int time) const;
-    const void computeDetector(int &dimension1, int &dimension2, int n, int x, int y) const;
-    const void computeDispenser(int &dimension1, int &dimension2, int n, int edge) const;
-    const void computeSinker(int &dimension1, int &dimension2, int edge) const;
-    const bool computeAroundChip(int x, int y, std::vector<int> edge) const;
-    void formulate();
+  /************************computer*****************************/
+  int computeDroplet(int dropletSequenceNum, int position, int time) const;
+  int computeMixer(int mixerSequenceNum, int position, int time) const;
+  int computeDetector(int detectorSequenceNum, int position) const;
+  int computeDispenser(int dispenserSequenceNum, int edge) const;
+  int computeSinker(int edge) const;
 
-  private:
-    const Profile &pf;
- 
+  /*********************main function*************************/
+  void formulate();
 
-    int xNum, yNum;
+private:
+  const Profile &pf;
+  z3::context &cxt;
+  z3::expr_vector &exprVec;
 
-    void formulateDroplet();
-    void formulateDetector();
-    void formulateDispenser();
-    void formulateSinker();
-    void formulateDetecting();
+  int dropletStartSequenceNum;
+  int mixerStartSequenceNum;
+  int detectorStartSequenceNum;
+  int dispenserStartSequenceNum;
+  int sinkerStartSequenceNum;
 
-    Formulator(Formulator &);
-    Formulator &operator=(Formulator &);
+  /*********************assistant function************************/
+  void formulateDroplet();
+  void formulateMixer();
+  void formulateDetector();
+  void formulateDispenser();
+  void formulateSinker();
+  void formulateDetecting();
+
+  Formulator(Formulator &);
+  Formulator &operator=(Formulator &);
 };
-
-/*******************functions********************/
-inline z3::context &Formulator::getContext() const
-{
-    return const_cast<z3::context &>(this->cxt);
-}
-
-inline const std::vector<z3::expr_vector> &Formulator::getExprVector() const
-{
-    return this->exprVec;
-}
 
 } // namespace DMFB
 

@@ -16,7 +16,7 @@ class Solver
 {
 public:
   /*********************constructor and destructor******************/
-  Solver(const Profile &p, const std::string &o = "");
+  Solver(Profile &p, const std::string &o = "");
   ~Solver(){};
 
   void solve();
@@ -35,7 +35,7 @@ public:
   }
 
 private:
-  const Profile &pf;
+  Profile &pf;
   std::string objective;
   z3::context cxt;
   z3::expr_vector exprVec;

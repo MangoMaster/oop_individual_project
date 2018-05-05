@@ -38,7 +38,7 @@ class Dispenser
     friend class Profile;
 
   private:
-    const std::vector<Droplet> &drops;
+    const std::vector<Droplet> &drops; // 为什么不能用const
     int spawnTime;
     int sequenceNum; // used by class Profile to identify
 };

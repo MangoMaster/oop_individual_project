@@ -16,6 +16,11 @@ class Droplet
     Droplet(const std::string &m = "")
         : name(m), sequenceNum(-1){};
     ~Droplet(){};
+    Droplet &operator=(const Droplet &right)
+    {
+        this->name = right.name;
+        this->sequenceNum = right.sequenceNum;
+    }
 
     /*********************getter**********************/
     const std::string &getName() const
