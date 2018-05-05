@@ -47,6 +47,8 @@ private:
   const int MAXLENGTH = 8;
   static const int N9X[8];
   static const int N9Y[8];
+  static const int N5X[4];
+  static const int N5Y[4];
 };
 
 /**
@@ -114,6 +116,7 @@ private:
   void noTimeNeighbor();
   void enoughNumber();
   void operationMovement();
+  void operationDisappear();
   void operationMixing();
   void operationDetecting();
   void meetObjective();

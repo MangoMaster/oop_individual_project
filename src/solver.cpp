@@ -11,6 +11,8 @@ namespace DMFB
 {
 const int Solver::N9X[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
 const int Solver::N9Y[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
+const int Solver::N5X[4] = {-1, 0, 1, 0};
+const int Solver::N5Y[4] = {0, 1, 0, -1};
 
 void Solver::solve()
 {

@@ -77,23 +77,13 @@ public:
     Droplet d(m, n, t);
     addDroplet(d);
   }
-  void addDroplet(int n)
-  {
-    Droplet d(n);
-    addDroplet(d);
-  }
   void addMixer(const Mixer &m)
   {
     mixerVec.push_back(m);
   }
-  void addMixer(const Droplet &d1, const Droplet &d2, int t1, const std::string &m = "", int n = 1, int t2 = 0)
+  void addMixer(const Droplet &d1, const Droplet &d2, int t1, const std::string &m, int n = 1, int t2 = 0)
   {
     Mixer mix(d1, d2, t1, m, n, t2);
-    addMixer(mix);
-  }
-  void addMixer(const Droplet &d1, const Droplet &d2, int t1, int n)
-  {
-    Mixer mix(d1, d2, t1, n);
     addMixer(mix);
   }
   void addDetector(const Detector &d)

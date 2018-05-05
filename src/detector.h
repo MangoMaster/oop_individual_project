@@ -24,10 +24,6 @@ class Detector : public Object
     {
         return this->drop.getName();
     }
-    int getSequenceNumber() const
-    {
-        return this->drop.getSequenceNumber();
-    }
     int getNumber() const
     {
         return this->number;
