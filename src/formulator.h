@@ -25,6 +25,7 @@ public:
   int computeDetector(int detectorSequenceNum, int position) const;
   int computeDispenser(int dispenserSequenceNum, int edge) const;
   int computeSinker(int edge) const;
+  int computeDetecting(int dropletSequenceNum, int time) const;
 
   /*********************main function*************************/
   void formulate();
@@ -39,6 +40,7 @@ private:
   int detectorStartSequenceNum;
   int dispenserStartSequenceNum;
   int sinkerStartSequenceNum;
+  int detectingStartSequenceNum;
 
   /*********************assistant function************************/
   void formulateDroplet();

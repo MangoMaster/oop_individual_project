@@ -40,7 +40,6 @@ private:
   void operationDisappear();
   void operationMixing();
   void operationDetecting();
-  void meetObjective();
 
   static const int N9X[8];
   static const int N9Y[8];

@@ -40,7 +40,7 @@ public:
   void addDroplet(Droplet &d);
   void addDroplet(const std::string &m = "");
   void addMixer(Mixer &m);
-  void addMixer(Droplet &d1, Droplet &d2, int t1, const std::string &m = "");
+  void addMixer(Droplet &d1, Droplet &d2, int l, int w, int t, const std::string &m = "");
   void addDetector(Detector &d);
   void addDetector(Droplet &d, int t);
   void addDispenser(Dispenser &d);
@@ -53,6 +53,9 @@ public:
   // given droplet, find the mixer that will accept it (if existed)
   // given sequenceNum in dropletVec, return sequenceNum in mixerVec or -1
   int findMixerOfDroplet(int dropletSequenceNum) const;
+  // given mixer, find the two droplets that produce it
+  // given sequenceNum in mixerVec, return two sequenceNum in dropletVec
+  void findDropletOfMixer(int mixerSequenceNum, int &dropletSequenceNum1, int &dropletSequenceNum2) const;
   // given droplet, find the mixer that produces it (if existed)
   // given sequenceNum in dropletVec, return sequenceNum in mixerVec or -1
   int findMixerAsDroplet(int dropletSequenceNum) const;
@@ -68,6 +71,8 @@ public:
   inline void computeXY(int &x, int &y, int position) const;
   // given position, compute its edge (if existed)
   void computeAroundChip(int position, std::vector<int> &edge) const;
+  // given sequenceNum is mixerVec and the position it produces droplet, compute its graph (if existed)
+  void computeGraph(int mixerSequenceNum, int position, std::vector<std::vector<int> > &graph) const;
 
 private:
   std::vector<Droplet> dropletVec; // 已自动包括mixer生成的droplet

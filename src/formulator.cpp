@@ -24,6 +24,7 @@ void Formulator::formulate()
     formulateDetector();
     formulateDispenser();
     formulateSinker();
+    formulateDetecting();
 }
 
 void Formulator::formulateDroplet()
@@ -93,6 +94,19 @@ void Formulator::formulateSinker()
     }
 }
 
+void Formulator::formulateDetecting()
+{
+    detectingStartSequenceNum = exprVec.size();
+    for (int i = 0; i < pf.getDropletNum(); ++i)
+        for (int j = 0; j < pf.getTime(); ++j)
+        {
+            stringstream ss;
+            ss << "detecting:droplet_" << i
+               << "_time_" << j;
+            exprVec.push_back(cxt.int_const(ss.str().c_str()));
+        }
+}
+
 int Formulator::computeDroplet(int dropletSequenceNum, int position, int time) const
 {
     assert(dropletSequenceNum >= 0 && dropletSequenceNum < pf.getDropletNum());
@@ -127,6 +141,13 @@ int Formulator::computeSinker(int edge) const
 {
     assert(edge >= 0 && edge < pf.getEdgeNum());
     return sinkerStartSequenceNum + edge;
+}
+
+int Formulator::computeDetecting(int dropletSequenceNum, int time) const
+{
+    assert(dropletSequenceNum >= 0 && dropletSequenceNum < pf.getDropletNum());
+    assert(time >= 0 && time < pf.getTime());
+    return detectingStartSequenceNum + dropletSequenceNum * pf.getTime() + time;
 }
 
 } // namespace DMFB

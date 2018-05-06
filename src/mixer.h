@@ -7,21 +7,21 @@
 namespace DMFB
 {
 /**
- * @brief Mixer (mixedDroplet1, mixedDroplet2, mixTime, name) is-a droplet
+ * @brief Mixer (mixedDroplet1, mixedDroplet2, mixLength, mixWidth, mixTime, name) is-a droplet
  * 
  */
 class Mixer : public Droplet
 {
   public:
-    Mixer(Droplet &d1, Droplet &d2, int t1, const std::string &m = "")
-        : drop1(d1), drop2(d2), mixTime(t1), Droplet(m), sequenceNumProducedDroplet(-1){};
+    Mixer(Droplet &d1, Droplet &d2, int l, int w, int t, const std::string &m = "")
+        : drop1(d1), drop2(d2), mixLength(l), mixWidth(w), mixTime(t), Droplet(m), sequenceNumMixer(-1){};
     ~Mixer(){};
     Mixer &operator=(const Mixer &right)
     {
         this->drop1 = right.drop1;
         this->drop2 = right.drop2;
         this->mixTime - right.mixTime;
-        this->sequenceNumProducedDroplet = right.sequenceNumProducedDroplet;
+        this->sequenceNumMixer = right.sequenceNumMixer;
         return *this;
     }
 
@@ -34,12 +34,22 @@ class Mixer : public Droplet
     {
         return drop2;
     }
+    void getMixSize(int &l, int &w) const
+    {
+        l = mixLength;
+        w = mixWidth;
+    }
     int getMixTime() const
     {
         return mixTime;
     }
 
     /***************************setter***********************/
+    void setMixSize(int l, int w)
+    {
+        mixLength = l;
+        mixWidth = w;
+    }
     void setMixTime(int t)
     {
         mixTime = t;
@@ -51,10 +61,12 @@ class Mixer : public Droplet
   private:
     Droplet &drop1; // 为什么不能用const
     Droplet &drop2;
+    int mixLength; // the length of mixer
+    int mixWidth;  // the width of mixer
     int mixTime;
-    int sequenceNumProducedDroplet; // used by class Profile to identify the droplet produced by this mixer.
-                                    // sequenceNum identify its number in the vector (dropletVec or mixerVec)
-                                    // sequenceNumProducedDroplet identify its number in dropletVec
+    int sequenceNumMixer; // used by class Profile to identify the droplet produced by this mixer.
+                                    // sequenceNum identify its number in dropletVec
+                                    // sequenceNumMixer identify its number in dropletVec
 };
 
 }; // namespace DMFB
