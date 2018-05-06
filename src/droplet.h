@@ -20,6 +20,7 @@ class Droplet
     {
         this->name = right.name;
         this->sequenceNum = right.sequenceNum;
+        return *this;
     }
 
     /*********************getter**********************/

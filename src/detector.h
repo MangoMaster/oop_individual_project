@@ -14,9 +14,16 @@ class Detector
 {
   public:
     /********************constructor and destructor********************/
-    Detector(const Droplet &d, int t = 0)
+    Detector(Droplet &d, int t = 0)
         : drop(d), detectTime(t), sequenceNum(-1){};
     ~Detector(){};
+    Detector &operator=(const Detector &right)
+    {
+        this->drop = right.drop;
+        this->detectTime = right.detectTime;
+        this->sequenceNum = right.sequenceNum;
+        return *this;
+    }
 
     /**************************getter************************/
     const Droplet &getDroplet() const
@@ -38,7 +45,7 @@ class Detector
     friend class Profile;
 
   private:
-    const Droplet &drop; // 为什么不能用const
+    Droplet &drop; // 为什么不能用const
     int detectTime;
     int sequenceNum; // used by class Profile to identify
 };

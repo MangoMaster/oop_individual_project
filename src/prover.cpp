@@ -383,7 +383,7 @@ void Prover::operationDisappear()
                 }
                 { // 不去心
                     int sequenceNum2 = formu.computeDroplet(d, p, t);
-                    exprNeighbor = exprNeighbor + exprVec[sequenceNum];
+                    exprNeighbor = exprNeighbor + exprVec[sequenceNum2];
                 }
                 {
                     int sequenceNum = formu.computeDroplet(d, p, t - 1);

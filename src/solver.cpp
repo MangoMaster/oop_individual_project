@@ -58,7 +58,7 @@ void Solver::_solve()
 {
     Formulator f(pf, cxt, exprVec);
     f.formulate();
-    Prover p(pf, exprVec, f);
+    Prover p(pf, exprVec, f, cxt, solv);
     p.prove();
 }
 

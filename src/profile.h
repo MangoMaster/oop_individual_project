@@ -40,11 +40,11 @@ public:
   void addDroplet(Droplet &d);
   void addDroplet(const std::string &m = "");
   void addMixer(Mixer &m);
-  void addMixer(const Droplet &d1, const Droplet &d2, int t1, const std::string &m = "");
+  void addMixer(Droplet &d1, Droplet &d2, int t1, const std::string &m = "");
   void addDetector(Detector &d);
-  void addDetector(const Droplet &d, int t);
+  void addDetector(Droplet &d, int t);
   void addDispenser(Dispenser &d);
-  void addDispenser(const std::vector<Droplet> &d, int t = 0);
+  void addDispenser(std::vector<Droplet> &d, int t = 0);
   inline void setSinkerNum(int n);
   inline void setSize(int l, int w);
   inline void setTime(int t);

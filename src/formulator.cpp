@@ -13,7 +13,8 @@ namespace DMFB
 Formulator::Formulator(const Profile &p, z3::context &c, z3::expr_vector &ev)
     : pf(p), cxt(c), exprVec(ev)
 {
-    exprVec.clear();
+    while (!exprVec.empty())
+        exprVec.pop_back();
 }
 
 void Formulator::formulate()
@@ -45,7 +46,7 @@ void Formulator::formulateMixer()
 {
     mixerStartSequenceNum = exprVec.size();
     for (int i = 0; i < pf.getMixerNum(); ++i)
-        for (int j = 0; j < pf.getsize(); ++j)
+        for (int j = 0; j < pf.getSize(); ++j)
             for (int k = 0; k < pf.getTime(); ++k)
             {
                 stringstream ss;

@@ -30,7 +30,7 @@ void Profile::addMixer(Mixer &m)
     mixerVec.push_back(m);
 }
 
-void Profile::addMixer(const Droplet &d1, const Droplet &d2, int t1, const std::string &m /* = ""*/)
+void Profile::addMixer(Droplet &d1, Droplet &d2, int t1, const std::string &m /* = ""*/)
 {
     Mixer mix(d1, d2, t1, m);
     addMixer(mix);
@@ -45,7 +45,7 @@ void Profile::addDetector(Detector &d)
     detectorVec.push_back(d);
 }
 
-void Profile::addDetector(const Droplet &d, int t)
+void Profile::addDetector(Droplet &d, int t)
 {
     Detector det(d, t);
     addDetector(det);
@@ -61,7 +61,7 @@ void Profile::addDispenser(Dispenser &d)
     dispenserVec.push_back(d);
 }
 
-void Profile::addDispenser(const vector<Droplet> &d, int t /* = 0*/)
+void Profile::addDispenser(vector<Droplet> &d, int t /* = 0*/)
 {
     Dispenser dis(d, t);
     dispenserVec.push_back(dis);

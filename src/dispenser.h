@@ -14,9 +14,16 @@ class Dispenser
 {
   public:
     /********************constructor and destructor********************/
-    Dispenser(const std::vector<Droplet> &d, int t = 0)
+    Dispenser(std::vector<Droplet> &d, int t = 0)
         : drops(d), spawnTime(t), sequenceNum(-1){};
     ~Dispenser(){};
+    Dispenser &operator=(const Dispenser &right)
+    {
+        this->drops = right.drops;
+        this->spawnTime = right.spawnTime;
+        this->sequenceNum = right.sequenceNum;
+        return *this;
+    }
 
     /**************************getter************************/
     const std::vector<Droplet> &getDropletVec() const
@@ -38,7 +45,7 @@ class Dispenser
     friend class Profile;
 
   private:
-    const std::vector<Droplet> &drops; // 为什么不能用const
+    std::vector<Droplet> &drops; // 为什么不能用const
     int spawnTime;
     int sequenceNum; // used by class Profile to identify
 };

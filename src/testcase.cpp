@@ -3,7 +3,7 @@
 
 using namespace std;
 using namespace DMFB;
-
+/*
 void example1()
 {
     Configuration cfg;
@@ -37,15 +37,15 @@ void example2()
     Solver s(c);
     s.setObjective("min time");
     s.solve();
-    /*if (s.check())
+    if (s.check())
     {
         s.print("output.txt");
-    }*/
+    }
 }
-
+*/
 int main()
 {
-    example1();
-    example2();
+    //example1();
+    //example2();
     return 0;
 }
