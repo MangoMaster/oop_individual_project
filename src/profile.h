@@ -18,7 +18,7 @@ class Profile
 {
 public:
   /***************constructor and destructor***************/
-  Profile() : length(-1), width(-1), time(-1){};
+  Profile(){};
   ~Profile(){};
 
   /*********************getter********************************/
@@ -79,10 +79,10 @@ private:
   std::vector<Mixer> mixerVec;
   std::vector<Detector> detectorVec;
   std::vector<Dispenser> dispenserVec;
-  int sinkerNum;
-  int length;
-  int width;
-  int time;
+  int sinkerNum = 0;
+  int length = -1;
+  int width = -1;
+  int time = -1;
 
   Profile(Profile &);
   Profile &operator=(Profile &);

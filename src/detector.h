@@ -15,7 +15,7 @@ class Detector
   public:
     /********************constructor and destructor********************/
     Detector(Droplet &d, int t = 0)
-        : drop(d), detectTime(t), sequenceNum(-1){};
+        : drop(d), detectTime(t){};
     ~Detector(){};
     Detector &operator=(const Detector &right)
     {
@@ -47,8 +47,9 @@ class Detector
   private:
     Droplet &drop; // 为什么不能用const
     int detectTime;
-    int sequenceNum; // used by class Profile to identify
+    int sequenceNum = -1; // used by class Profile to identify
 };
-}; // namespace DMFB
+
+} // namespace DMFB
 
 #endif // DETECTOR_H_

@@ -15,7 +15,7 @@ class Dispenser
   public:
     /********************constructor and destructor********************/
     Dispenser(std::vector<Droplet> &d, int t = 0)
-        : drops(d), spawnTime(t), sequenceNum(-1){};
+        : drops(d), spawnTime(t){};
     ~Dispenser(){};
     Dispenser &operator=(const Dispenser &right)
     {
@@ -47,7 +47,7 @@ class Dispenser
   private:
     std::vector<Droplet> &drops; // 为什么不能用const
     int spawnTime;
-    int sequenceNum; // used by class Profile to identify
+    int sequenceNum = -1; // used by class Profile to identify
 };
 
 } // namespace DMFB

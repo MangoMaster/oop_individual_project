@@ -14,7 +14,7 @@ class Droplet
   public:
     /*****************constructor and destructor********************/
     Droplet(const std::string &m = "")
-        : name(m), sequenceNum(-1){};
+        : name(m){};
     ~Droplet(){};
     Droplet &operator=(const Droplet &right)
     {
@@ -40,7 +40,7 @@ class Droplet
 
   private:
     std::string name;
-    int sequenceNum; // used by class Profile to identify
+    int sequenceNum = -1; // used by class Profile to identify
 };
 
 }; // namespace DMFB

@@ -23,7 +23,9 @@ Prover::Prover(const Profile &p, const z3::expr_vector &ev, const Formulator &f,
 
 void Prover::prove()
 {
+    solv.reset(); // 每次prove的时候都需重置solv
     isBool();
+    noStart();
     noSpaceOverlap();
     noTimeOverlap();
     noN9SpaceNeighbor();
@@ -40,6 +42,26 @@ void Prover::isBool()
     // 0-false  1-true
     for (int i = 0; i < exprVec.size(); ++i)
         solv.add(exprVec[i] == 0 || exprVec[i] == 1);
+}
+
+void Prover::noStart()
+{
+    // t==0
+    // droplet
+    for (int d = 0; d < pf.getDropletNum(); ++d)
+        for (int p = 0; p < pf.getSize(); ++p)
+        {
+            int sequenceNum = formu.computeDroplet(d, p, 0);
+            solv.add(exprVec[sequenceNum] == 0);
+        }
+
+    // mixer
+    for (int n = 0; n < pf.getMixerNum(); ++n)
+        for (int p = 0; p < pf.getSize(); ++p)
+        {
+            int sequenceNum = formu.computeMixer(n, p, 0);
+            solv.add(exprVec[sequenceNum] == 0);
+        }
 }
 
 void Prover::noSpaceOverlap()
@@ -123,6 +145,7 @@ void Prover::noTimeOverlap()
         }
 }
 
+// problem: mixer?
 void Prover::noN9SpaceNeighbor()
 {
     int xNum, yNum;
@@ -286,19 +309,27 @@ void Prover::enoughNumber()
 
     // detector
     for (int n = 0; n < pf.getDetectorNum(); ++n)
+    {
+        expr exprEnough = cxt.int_val(0);
         for (int p = 0; p < pf.getSize(); ++p)
         {
             int sequenceNum = formu.computeDetector(n, p);
-            solv.add(exprVec[sequenceNum] == 1);
+            exprEnough = exprEnough + exprVec[sequenceNum];
         }
+        solv.add(exprEnough == 1);
+    }
 
     // dispenser
     for (int n = 0; n < pf.getDispenserNum(); ++n)
+    {
+        expr exprEnough = cxt.int_val(0);
         for (int e = 0; e < pf.getEdgeNum(); ++e)
         {
             int sequenceNum = formu.computeDispenser(n, e);
-            solv.add(exprVec[sequenceNum] == 1);
+            exprEnough = exprEnough + exprVec[sequenceNum];
         }
+        solv.add(exprEnough == 1);
+    }
 
     // sinker
     {
@@ -357,7 +388,7 @@ void Prover::operationMovement()
                 int mixerNum = pf.findMixerAsDroplet(d);
                 if (mixerNum >= 0)
                 {
-                    int sequenceNum = formu.computeMixer(mixerNum, p, t);
+                    int sequenceNum = formu.computeMixer(mixerNum, p, t - 1);
                     exprMovement = exprMovement + exprVec[sequenceNum];
                 }
                 {
@@ -435,6 +466,8 @@ void Prover::operationMixing()
             continue;
         assert(pf.findDispenserOfDroplet(n) < 0); // no dispenser
         int mixTime = pf.getMixerVec()[mixerNum].getMixTime();
+        if (mixTime + 2 >= pf.getTime())
+            solv.add(cxt.bool_val(false));
         for (int p = 0; p < pf.getSize(); ++p)
             for (int t = mixTime + 2; t < pf.getTime(); ++t)
             {
@@ -487,6 +520,8 @@ void Prover::operationMixing()
                 {
                     vector<vector<int> > mixerGraph;
                     pf.computeGraph(mixerNum, p, mixerGraph);
+                    if (mixerGraph.empty())
+                    solv.add(cxt.bool_val(false));
                     for (int tempGraphNum = 0; tempGraphNum < mixerGraph.size(); ++tempGraphNum)
                     {
                         expr exprGraphNum = cxt.int_val(0);
@@ -496,10 +531,10 @@ void Prover::operationMixing()
                                 int sequenceNumMixer = formu.computeMixer(mixerNum, mixerGraph[tempGraphNum][tempPositionNum], t2);
                                 exprGraphNum = exprGraphNum + exprVec[sequenceNumMixer];
                             }
-                        exprMixGraph = exprMixGraph || (exprGraphNum == mixerGraph[tempGraphNum].size() * mixTime);
+                        exprMixGraph = exprMixGraph || (exprGraphNum == cxt.int_val(mixerGraph[tempGraphNum].size() * mixTime));
                     }
                 }
-                solv.add(exprMixGraph);
+                solv.add(implies(exprVec[sequenceNum] == 1 && exprDropletPre == 0, exprMixGraph));
             }
     }
 }

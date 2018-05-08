@@ -20,6 +20,7 @@ public:
   ~Solver(){};
 
   void solve();
+  void print();
 
   /********************************getter*************************/
   const std::string &getObjective() const

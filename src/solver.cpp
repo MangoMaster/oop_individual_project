@@ -3,6 +3,7 @@
 #include "solver.h"
 #include "formulator.h"
 #include "prover.h"
+#include "printer.h"
 #include "z3++.h"
 
 using namespace std;
@@ -37,6 +38,9 @@ void Solver::solve()
         {
             pf.setTime(tempTime);
             _solve();
+            cout << tempTime;
+            if (solv.check() == sat)
+                break;
         }
     }
     else if (objective.compare("min size") == 0)
@@ -44,14 +48,27 @@ void Solver::solve()
         assert(pf.getTime() != 0);
         //loop and increase size
         for (int tempY = 1; tempY <= MAXLENGTH; ++tempY)
+        {
             for (int tempX = tempY; tempX <= MAXLENGTH; ++tempX) // x>=y
             {
                 pf.setSize(tempX, tempY);
                 _solve();
+                cout << "(" << tempX << tempY << ")";
+                if (solv.check() == sat)
+                    break;
             }
+            if (solv.check() == sat)
+                break;
+        }
     }
     else
         assert(false);
+}
+
+void Solver::print()
+{
+    Printer p(solv);
+    p.print();
 }
 
 void Solver::_solve()

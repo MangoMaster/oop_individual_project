@@ -64,13 +64,14 @@ void Profile::addDispenser(Dispenser &d)
 void Profile::addDispenser(vector<Droplet> &d, int t /* = 0*/)
 {
     Dispenser dis(d, t);
-    dispenserVec.push_back(dis);
+    addDispenser(dis);
 }
 
 // given droplet, find the mixer that will accept it (if existed)
 // given sequenceNum in dropletVec, return sequenceNum in mixerVec or -1
 int Profile::findMixerOfDroplet(int dropletSequenceNum) const
 {
+    assert(dropletSequenceNum >= 0 && dropletSequenceNum < getDropletNum());
     for (int i = 0; i < mixerVec.size(); ++i)
         if (mixerVec[i].getDroplet1().sequenceNum == dropletSequenceNum || mixerVec[i].getDroplet2().sequenceNum == dropletSequenceNum)
             return i;
@@ -90,6 +91,7 @@ void Profile::findDropletOfMixer(int mixerSequenceNum, int &dropletSequenceNum1,
 // given sequenceNum in dropletVec, return sequenceNum in mixerVec or -1
 int Profile::findMixerAsDroplet(int dropletSequenceNum) const
 {
+    assert(dropletSequenceNum >= 0 && dropletSequenceNum < getDropletNum());
     for (int i = 0; i < mixerVec.size(); ++i)
         if (mixerVec[i].sequenceNum == dropletSequenceNum)
             return i;
@@ -100,6 +102,7 @@ int Profile::findMixerAsDroplet(int dropletSequenceNum) const
 // given sequenceNum in dropletVec, return sequenceNum in dispenserVec or -1
 int Profile::findDetectorOfDroplet(int dropletSequenceNum) const
 {
+    assert(dropletSequenceNum >= 0 && dropletSequenceNum < getDropletNum());
     for (int i = 0; i < detectorVec.size(); ++i)
         if (detectorVec[i].getDroplet().sequenceNum == dropletSequenceNum)
             return i;
@@ -110,6 +113,7 @@ int Profile::findDetectorOfDroplet(int dropletSequenceNum) const
 // given sequenceNum in dropletVec, return sequenceNum in dispenserVec or -1
 int Profile::findDispenserOfDroplet(int dropletSequenceNum) const
 {
+    assert(dropletSequenceNum >= 0 && dropletSequenceNum < getDropletNum());
     for (int i = 0; i < dispenserVec.size(); ++i)
         for (int j = 0; j < dispenserVec[i].getDropletVec().size(); ++j)
             if (dispenserVec[i].getDropletVec()[j].sequenceNum == dropletSequenceNum)

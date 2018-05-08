@@ -14,7 +14,7 @@ class Mixer : public Droplet
 {
   public:
     Mixer(Droplet &d1, Droplet &d2, int l, int w, int t, const std::string &m = "")
-        : drop1(d1), drop2(d2), mixLength(l), mixWidth(w), mixTime(t), Droplet(m), sequenceNumMixer(-1){};
+        : drop1(d1), drop2(d2), mixLength(l), mixWidth(w), mixTime(t), Droplet(m){};
     ~Mixer(){};
     Mixer &operator=(const Mixer &right)
     {
@@ -64,7 +64,7 @@ class Mixer : public Droplet
     int mixLength; // the length of mixer
     int mixWidth;  // the width of mixer
     int mixTime;
-    int sequenceNumMixer; // used by class Profile to identify the droplet produced by this mixer.
+    int sequenceNumMixer = -1; // used by class Profile to identify the droplet produced by this mixer.
                                     // sequenceNum identify its number in dropletVec
                                     // sequenceNumMixer identify its number in dropletVec
 };
