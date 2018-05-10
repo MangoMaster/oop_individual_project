@@ -22,8 +22,9 @@ public:
   Solver(Profile &p, const std::string &o = "");
   ~Solver(){};
 
+  /*********************main function****************************/
   void solve();
-  void print();
+  void print(const std::string& printFile);
 
   /********************************getter*************************/
   const std::string &getObjective() const
@@ -49,6 +50,7 @@ private:
   Prover prov;
   Printer prin;
 
+  /*************************assistant function************************/
   void _solve();
   void checkReadyForSolve();
 

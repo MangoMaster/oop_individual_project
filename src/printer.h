@@ -2,6 +2,7 @@
 #define PRINTER_H_
 
 #include <fstream>
+#include <string>
 #include "profile.h"
 #include "formulator.h"
 #include "z3++.h"
@@ -17,7 +18,9 @@ class Printer
 public:
   Printer(const Profile &p, const z3::expr_vector &e, const Formulator &f, z3::context &c, z3::solver &s);
   ~Printer(){};
-  void print() const;
+
+  /***********************main function************************/
+  void print(const std::string& printFile) const;
 
 private:
   const Profile &pf;
@@ -26,6 +29,7 @@ private:
   z3::context &cxt;
   z3::solver &solv;
 
+  /**********************assistant function**************************/
   void printModel(const z3::model &mdl, std::ostream &fout) const;
   void printDropletModel(const z3::model &mdl, std::ostream &fout) const;
   void printMixerModel(const z3::model &mdl, std::ostream &fout) const;

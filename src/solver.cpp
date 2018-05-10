@@ -64,9 +64,9 @@ void Solver::solve()
         assert(false);
 }
 
-void Solver::print()
+void Solver::print(const std::string& printFile)
 {
-    prin.print();
+    prin.print(printFile);
 }
 
 void Solver::_solve()

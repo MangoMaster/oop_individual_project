@@ -14,10 +14,10 @@ Printer::Printer(const Profile &p, const z3::expr_vector &e, const Formulator &f
 {
 }
 
-void Printer::print() const
+void Printer::print(const string& printFile) const
 {
     ofstream fout;
-    fout.open("output.txt", ofstream::out | ofstream::app);
+    fout.open(printFile.c_str());
 
     fout << solv.check() << endl
          << endl;
