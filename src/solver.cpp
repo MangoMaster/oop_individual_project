@@ -39,7 +39,6 @@ void Solver::solve()
         {
             pf.setTime(tempTime);
             _solve();
-            cout << tempTime;
             if (solv.check() == sat)
                 break;
         }
@@ -54,7 +53,6 @@ void Solver::solve()
             {
                 pf.setSize(tempX, tempY);
                 _solve();
-                cout << "(" << tempX << tempY << ")";
                 if (solv.check() == sat)
                     break;
             }

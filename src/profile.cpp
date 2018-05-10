@@ -184,6 +184,8 @@ void Profile::computeGraph(int mixerSequenceNum, int position, std::vector<std::
             graph.push_back(tempGraph);
         }
 
+    if (lengthMixer == widthMixer) // 不需要再计算
+        return;
     for (int i = 0; i < widthMixer; ++i)
         for (int j = 0; j < lengthMixer; ++j)
         {
