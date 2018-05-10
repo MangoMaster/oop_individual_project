@@ -1,6 +1,9 @@
 #ifndef PRINTER_H_
 #define PRINTER_H_
 
+#include <fstream>
+#include "profile.h"
+#include "formulator.h"
 #include "z3++.h"
 
 namespace DMFB
@@ -11,12 +14,26 @@ namespace DMFB
  */
 class Printer
 {
-  public:
-    Printer(z3::solver &s) : solv(s){};
-    void print();
+public:
+  Printer(const Profile &p, const z3::expr_vector &e, const Formulator &f, z3::context &c, z3::solver &s);
+  ~Printer(){};
+  void print() const;
 
-  private:
-    z3::solver &solv;
+private:
+  const Profile &pf;
+  const z3::expr_vector &exprVec;
+  const Formulator &formu;
+  z3::context &cxt;
+  z3::solver &solv;
+
+  void printModel(const z3::model &mdl, std::ostream &fout) const;
+  void printDropletModel(const z3::model &mdl, std::ostream &fout) const;
+  void printMixerModel(const z3::model &mdl, std::ostream &fout) const;
+  void printDetectorModel(const z3::model &mdl, std::ostream &fout) const;
+  void printDispenserModel(const z3::model &mdl, std::ostream &fout) const;
+  void printSinkerModel(const z3::model &mdl, std::ostream &fout) const;
+  void printDetectingModel(const z3::model &mdl, std::ostream &fout) const;
+  void printProfile(std::ostream &fout) const;
 };
 
 } // namespace DMFB

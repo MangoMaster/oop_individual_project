@@ -581,7 +581,7 @@ void Prover::operationMixing()
                                     int sequenceNumMixer = formu.computeMixer(mixerNum, mixerGraph[tempGraphNum][tempPositionNum], t2);
                                     exprGraphNum = exprGraphNum + exprVec[sequenceNumMixer];
                                 }
-                            exprMixGraph = exprMixGraph || (exprGraphNum == cxt.int_val(mixSize * mixTime));
+                            exprMixGraph = exprMixGraph || (exprGraphNum == mixSize * mixTime);
                         }
                     }
                     solv.add(implies(exprVec[sequenceNum] == 1 && exprDropletPre == 0,
@@ -620,6 +620,25 @@ void Prover::operationDetecting()
                                              exprVec[dropletExprSequenceNumt2] == 1));
                     }
                 }
+        }
+    }
+
+    for (int n = 0; n < pf.getDropletNum(); ++n)
+    {
+        int detectorNum = pf.findDetectorOfDroplet(n);
+        if (detectorNum >= 0) // 有detect
+        {
+            for (int t = 0; t < pf.getTime(); ++t)
+            {
+                int detectingSequenceNum = formu.computeDetecting(n, t);
+                expr exprDroplet = cxt.int_val(0);
+                for (int p = 0; p < pf.getSize(); ++p)
+                {
+                    int dropletSequenceNum = formu.computeDroplet(n, p, t);
+                    exprDroplet = exprDroplet + exprVec[dropletSequenceNum];
+                }
+                solv.add(implies(exprVec[detectingSequenceNum] == 1, exprDroplet == 1));
+            }
         }
     }
 }

@@ -67,8 +67,8 @@ public:
   int findDispenserOfDroplet(int dropletSequenceNum) const;
 
   /*******************computer***************************/
-  inline int computePosition(int x, int y) const;
-  inline void computeXY(int &x, int &y, int position) const;
+  int computePosition(int x, int y) const;
+  void computeXY(int &x, int &y, int position) const;
   // given position, compute its edge (if existed)
   void computeAroundChip(int position, std::vector<int> &edge) const;
   // given sequenceNum is mixerVec and the position it produces droplet, compute its graph (if existed)
@@ -169,20 +169,6 @@ inline void Profile::setSize(int l, int w)
 inline void Profile::setTime(int t)
 {
   this->time = t;
-}
-
-inline int Profile::computePosition(int x, int y) const
-{
-  assert(x >= 0 && x < length && y >= 0 && y < width);
-  // position 从左上角开始，一行一行排序
-  return y * length + x;
-}
-inline void Profile::computeXY(int &x, int &y, int position) const
-{
-  assert(position >= 0 && position < getSize());
-  // position 从左上角开始，一行一行排序
-  x = position % length;
-  y = position / length;
 }
 
 } // namespace DMFB

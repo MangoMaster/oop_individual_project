@@ -4,6 +4,9 @@
 #include <string>
 #include <cassert>
 #include "profile.h"
+#include "formulator.h"
+#include "prover.h"
+#include "printer.h"
 #include "z3++.h"
 
 namespace DMFB
@@ -41,6 +44,10 @@ private:
   z3::context cxt;
   z3::expr_vector exprVec;
   z3::solver solv;
+
+  Formulator formu;
+  Prover prov;
+  Printer prin;
 
   void _solve();
   void checkReadyForSolve();

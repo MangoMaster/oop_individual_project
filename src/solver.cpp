@@ -13,7 +13,8 @@ namespace DMFB
 {
 
 Solver::Solver(Profile &p, const std::string &o /* = ""*/)
-    : pf(p), objective(o), cxt(), exprVec(cxt), solv(cxt)
+    : pf(p), objective(o), cxt(), exprVec(cxt), solv(cxt),
+      formu(pf, cxt, exprVec), prov(pf, exprVec, formu, cxt, solv), prin(pf, exprVec, formu, cxt, solv)
 {
     assert(o.compare("") == 0 || o.compare("prove") == 0 || o.compare("min time") == 0 || o.compare("min size") == 0);
 }
@@ -67,16 +68,13 @@ void Solver::solve()
 
 void Solver::print()
 {
-    Printer p(solv);
-    p.print();
+    prin.print();
 }
 
 void Solver::_solve()
 {
-    Formulator f(pf, cxt, exprVec);
-    f.formulate();
-    Prover p(pf, exprVec, f, cxt, solv);
-    p.prove();
+    formu.formulate();
+    prov.prove();
 }
 
 void Solver::checkReadyForSolve()

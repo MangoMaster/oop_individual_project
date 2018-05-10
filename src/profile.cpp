@@ -121,6 +121,21 @@ int Profile::findDispenserOfDroplet(int dropletSequenceNum) const
     return -1;
 }
 
+int Profile::computePosition(int x, int y) const
+{
+    assert(x >= 0 && x < length && y >= 0 && y < width);
+    // position 从左上角开始，一行一行排序
+    return y * length + x;
+}
+
+void Profile::computeXY(int &x, int &y, int position) const
+{
+    assert(position >= 0 && position < getSize());
+    // position 从左上角开始，一行一行排序
+    x = position % length;
+    y = position / length;
+}
+
 void Profile::computeAroundChip(int position, std::vector<int> &edge) const
 {
     assert(position >= 0 && position < getSize());
