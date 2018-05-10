@@ -29,7 +29,7 @@ private:
 
   /***********************assistant function**********************/
   void isBool();
-  void noStart();
+  void isStart();
   void noSpaceOverlap();
   void noTimeOverlap();
   void noN9SpaceNeighbor();

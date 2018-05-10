@@ -25,7 +25,7 @@ void Prover::prove()
 {
     solv.reset(); // 每次prove的时候都需重置solv
     isBool();
-    noStart();
+    isStart();
     noSpaceOverlap();
     noTimeOverlap();
     noN9SpaceNeighbor();
@@ -44,7 +44,7 @@ void Prover::isBool()
         solv.add(exprVec[i] == 0 || exprVec[i] == 1);
 }
 
-void Prover::noStart()
+void Prover::isStart()
 {
     // t==0
     // droplet
@@ -60,6 +60,14 @@ void Prover::noStart()
         for (int p = 0; p < pf.getSize(); ++p)
         {
             int sequenceNum = formu.computeMixer(n, p, 0);
+            solv.add(exprVec[sequenceNum] == 0);
+        }
+
+    // detecting
+    for (int d = 0; d < pf.getDropletNum(); ++d)
+        if (pf.findDetectorOfDroplet(d) >= 0)
+        {
+            int sequenceNum = formu.computeDetecting(d, 0);
             solv.add(exprVec[sequenceNum] == 0);
         }
 }
@@ -139,9 +147,8 @@ void Prover::noTimeOverlap()
                 int sequenceNum = formu.computeMixer(n, p, t);
                 exprMixer = exprMixer + exprVec[sequenceNum];
             }
-            int mixerLength, mixerWidth;
-            pf.getMixerVec()[n].getMixSize(mixerLength, mixerWidth);
-            solv.add(exprMixer == mixerLength * mixerWidth || exprMixer == 0);
+            int mixerSize = pf.getMixerVec()[n].getMixSize();
+            solv.add(exprMixer == mixerSize || exprMixer == 0);
         }
 }
 
@@ -341,6 +348,29 @@ void Prover::enoughNumber()
         }
         solv.add(exprEnough == pf.getSinkerNum());
     }
+
+    // detecting
+    for (int n = 0; n < pf.getDropletNum(); ++n)
+    {
+        int detectorNum = pf.findDetectorOfDroplet(n);
+        if (detectorNum >= 0) // 有detect
+        {
+            int detectTime = pf.getDetectorVec()[detectorNum].getDetectTime();
+            expr exprDetecting = cxt.int_val(0);
+            for (int t = 0; t < pf.getTime(); ++t)
+            {
+                int sequenceNum = formu.computeDetecting(n, t);
+                exprDetecting = exprDetecting + exprVec[sequenceNum];
+            }
+            solv.add(exprDetecting == detectTime);
+        }
+        else // 无detect
+            for (int t = 0; t < pf.getTime(); ++t)
+            {
+                int sequenceNum = formu.computeDetecting(n, t);
+                solv.add(exprVec[sequenceNum] == 0);
+            }
+    }
 }
 
 void Prover::operationMovement()
@@ -353,23 +383,24 @@ void Prover::operationMovement()
             expr exprDispenser = cxt.int_val(0);
             {
                 // dispenser produce
-                vector<int> e;
-                pf.computeAroundChip(p, e);
-                for (int i = 0; i < e.size(); ++i)
+                int dispenserNum = pf.findDispenserOfDroplet(d);
+                if (dispenserNum >= 0) // 有dispenser
                 {
-                    int dispenserNum = pf.findDispenserOfDroplet(d);
-                    if (dispenserNum < 0) // 无dispenser
-                        continue;
-                    int sequenceNum = formu.computeDispenser(dispenserNum, e[i]);
-                    exprDispenser = exprDispenser + exprVec[sequenceNum];
+                    vector<int> e;
+                    pf.computeAroundChip(p, e);
+                    for (int i = 0; i < e.size(); ++i)
+                    {
+                        int sequenceNum = formu.computeDispenser(dispenserNum, e[i]);
+                        exprDispenser = exprDispenser + exprVec[sequenceNum];
+                    }
                 }
             }
             int x, y;
             pf.computeXY(x, y, p);
             for (int t = 1; t < pf.getTime(); ++t) // t==0 时 t-1不存在
             {
-                expr exprMovement = cxt.int_val(0);
                 // move from N-5 neighbor
+                expr exprMovement = cxt.int_val(0);
                 for (int i = 0; i < sizeof(N5X) / sizeof(N5X[0]); ++i)
                 {
                     int x2 = x + N5X[i];
@@ -385,15 +416,18 @@ void Prover::operationMovement()
                     exprMovement = exprMovement + exprVec[sequenceNum2];
                 }
                 // mixer produce
+                expr exprMixer = cxt.int_val(0);
                 int mixerNum = pf.findMixerAsDroplet(d);
-                if (mixerNum >= 0)
+                if (mixerNum >= 0) // 有mixer
                 {
                     int sequenceNum = formu.computeMixer(mixerNum, p, t - 1);
-                    exprMovement = exprMovement + exprVec[sequenceNum];
+                    exprMixer = exprMixer + exprVec[sequenceNum];
                 }
                 {
                     int sequenceNum = formu.computeDroplet(d, p, t);
-                    solv.add(implies(exprVec[sequenceNum] == 1, exprMovement == 1) || implies(exprVec[sequenceNum] == 1, exprDispenser >= 1));
+                    solv.add(implies(exprVec[sequenceNum] == 1, exprMovement == 1) ||
+                             implies(exprVec[sequenceNum] == 1, exprDispenser >= 1) ||
+                             implies(exprVec[sequenceNum] == 1, exprMixer == 1));
                 }
             }
         }
@@ -427,10 +461,24 @@ void Prover::operationDisappear()
                 int mixerNum = pf.findMixerOfDroplet(d);
                 if (mixerNum >= 0)
                 {
-                    int sequenceNum = formu.computeMixer(mixerNum, p, t);
-                    exprMixer = exprMixer + exprVec[sequenceNum];
-                    int sequenceNumPre = formu.computeMixer(mixerNum, p, t - 1);
-                    exprMixerPre = exprMixerPre + exprVec[sequenceNumPre];
+                    for (int i = 0; i < sizeof(N5X) / sizeof(N5X[0]); ++i)
+                    {
+                        int x2 = x + N5X[i];
+                        int y2 = y + N5Y[i];
+                        if (x2 < 0 || x2 >= xNum || y2 < 0 || y2 >= yNum)
+                            continue;
+                        int p2 = pf.computePosition(x2, y2);
+                        int sequenceNum2 = formu.computeMixer(mixerNum, p2, t);
+                        exprMixer = exprMixer + exprVec[sequenceNum2];
+                        int sequenceNumPre2 = formu.computeMixer(mixerNum, p2, t - 1);
+                        exprMixerPre = exprMixerPre + exprVec[sequenceNumPre2];
+                    }
+                    { // 不去心
+                        int sequenceNum = formu.computeMixer(mixerNum, p, t);
+                        exprMixer = exprMixer + exprVec[sequenceNum];
+                        int sequenceNumPre = formu.computeMixer(mixerNum, p, t - 1);
+                        exprMixerPre = exprMixerPre + exprVec[sequenceNumPre];
+                    }
                 }
                 // neighbor
                 expr exprNeighbor = cxt.int_val(0);
@@ -462,80 +510,84 @@ void Prover::operationMixing()
     for (int n = 0; n < pf.getDropletNum(); ++n)
     {
         int mixerNum = pf.findMixerAsDroplet(n);
-        if (mixerNum < 0)
-            continue;
-        assert(pf.findDispenserOfDroplet(n) < 0); // no dispenser
-        int mixTime = pf.getMixerVec()[mixerNum].getMixTime();
-        if (mixTime + 2 >= pf.getTime())
-            solv.add(cxt.bool_val(false));
-        for (int p = 0; p < pf.getSize(); ++p)
-            for (int t = mixTime + 2; t < pf.getTime(); ++t)
-            {
-                // t时刻冒出来
-                int sequenceNum = formu.computeDroplet(n, p, t);
-                // t-1时刻哪也没有
-                expr exprDropletPre = cxt.int_val(0);
-                for (int p2 = 0; p2 < pf.getSize(); ++p2)
+        if (mixerNum >= 0)
+        {
+            assert(pf.findDispenserOfDroplet(n) < 0); // no dispenser
+            int mixTime = pf.getMixerVec()[mixerNum].getMixTime();
+            int mixSize = pf.getMixerVec()[mixerNum].getMixSize();
+            for (int p = 0; p < pf.getSize(); ++p)
+                for (int t = mixTime + 2; t < pf.getTime(); ++t)
                 {
-                    int sequenceNumPre = formu.computeDroplet(n, p2, t - 1);
-                    exprDropletPre = exprDropletPre + exprVec[sequenceNumPre];
-                }
-                int oldDropletNum1, oldDropletNum2;
-                pf.findDropletOfMixer(mixerNum, oldDropletNum1, oldDropletNum2);
-                // t-mixTime-1时刻oldDroplet在N-5邻域
-                expr exprOldDropletPre1 = cxt.int_val(0);
-                expr exprOldDropletPre2 = cxt.int_val(0);
-                {
-                    int x, y;
-                    pf.computeXY(x, y, p);
-                    int xNum, yNum;
-                    pf.getSize(xNum, yNum);
-                    for (int i = 0; i < sizeof(N5X) / sizeof(N5X[0]); ++i)
+                    // t时刻冒出来
+                    int sequenceNum = formu.computeDroplet(n, p, t);
+                    // t-1时刻哪也没有
+                    expr exprDropletPre = cxt.int_val(0);
+                    for (int p2 = 0; p2 < pf.getSize(); ++p2)
                     {
-                        int x2 = x + N5X[i];
-                        int y2 = y + N5Y[i];
-                        if (x2 < 0 || x2 >= xNum || y2 < 0 || y2 >= yNum)
-                            continue;
-                        int p2 = pf.computePosition(x2, y2);
-                        int sequenceNumOldPre1 = formu.computeDroplet(oldDropletNum1, p2, t - mixTime - 1);
-                        exprOldDropletPre1 = exprOldDropletPre1 + exprVec[sequenceNumOldPre1];
-                        int sequenceNumOldPre2 = formu.computeDroplet(oldDropletNum2, p2, t - mixTime - 1);
-                        exprOldDropletPre2 = exprOldDropletPre2 + exprVec[sequenceNumOldPre2];
+                        int sequenceNumPre = formu.computeDroplet(n, p2, t - 1);
+                        exprDropletPre = exprDropletPre + exprVec[sequenceNumPre];
                     }
-                }
-                solv.add(implies(exprVec[sequenceNum] == 1 && exprDropletPre == 0, exprOldDropletPre1 == 1 && exprOldDropletPre2 == 1));
-                // t-mixTime时刻oldDroplet不见了
-                expr exprOldDroplet1 = cxt.int_val(0);
-                expr exprOldDroplet2 = cxt.int_val(0);
-                for (int p2 = 0; p2 < pf.getSize(); ++p2)
-                {
-                    int sequenceNumOld1 = formu.computeDroplet(oldDropletNum1, p2, t - mixTime);
-                    exprOldDroplet1 = exprOldDroplet1 + exprVec[sequenceNumOld1];
-                    int sequenceNumOld2 = formu.computeDroplet(oldDropletNum2, p2, t - mixTime);
-                    exprOldDroplet2 = exprOldDroplet2 + exprVec[sequenceNumOld2];
-                }
-                solv.add(implies(exprVec[sequenceNum] == 1 && exprDropletPre == 0, exprOldDroplet1 == 0 && exprOldDroplet2 == 0));
-                // [t-mixTime,t)进行mix
-                expr exprMixGraph = cxt.bool_val(false);
-                {
-                    vector<vector<int> > mixerGraph;
-                    pf.computeGraph(mixerNum, p, mixerGraph);
-                    if (mixerGraph.empty())
-                    solv.add(cxt.bool_val(false));
-                    for (int tempGraphNum = 0; tempGraphNum < mixerGraph.size(); ++tempGraphNum)
+                    int oldDropletNum1, oldDropletNum2;
+                    pf.findDropletOfMixer(mixerNum, oldDropletNum1, oldDropletNum2);
+                    // t-mixTime-1时刻oldDroplet在N-5邻域
+                    expr exprOldDropletPre1 = cxt.int_val(0);
+                    expr exprOldDropletPre2 = cxt.int_val(0);
                     {
-                        expr exprGraphNum = cxt.int_val(0);
-                        for (int tempPositionNum = 0; tempPositionNum < mixerGraph[tempGraphNum].size(); ++tempPositionNum)
-                            for (int t2 = t - mixTime; t2 < t; ++t2)
-                            {
-                                int sequenceNumMixer = formu.computeMixer(mixerNum, mixerGraph[tempGraphNum][tempPositionNum], t2);
-                                exprGraphNum = exprGraphNum + exprVec[sequenceNumMixer];
-                            }
-                        exprMixGraph = exprMixGraph || (exprGraphNum == cxt.int_val(mixerGraph[tempGraphNum].size() * mixTime));
+                        int x, y;
+                        pf.computeXY(x, y, p);
+                        int xNum, yNum;
+                        pf.getSize(xNum, yNum);
+                        for (int i = 0; i < sizeof(N5X) / sizeof(N5X[0]); ++i)
+                        {
+                            int x2 = x + N5X[i];
+                            int y2 = y + N5Y[i];
+                            if (x2 < 0 || x2 >= xNum || y2 < 0 || y2 >= yNum)
+                                continue;
+                            int p2 = pf.computePosition(x2, y2);
+                            int sequenceNumOldPre1 = formu.computeDroplet(oldDropletNum1, p2, t - mixTime - 1);
+                            exprOldDropletPre1 = exprOldDropletPre1 + exprVec[sequenceNumOldPre1];
+                            int sequenceNumOldPre2 = formu.computeDroplet(oldDropletNum2, p2, t - mixTime - 1);
+                            exprOldDropletPre2 = exprOldDropletPre2 + exprVec[sequenceNumOldPre2];
+                        }
                     }
+                    solv.add(implies(exprVec[sequenceNum] == 1 && exprDropletPre == 0,
+                                     exprOldDropletPre1 == 1 && exprOldDropletPre2 == 1));
+
+                    // t-mixTime时刻oldDroplet不见了
+                    expr exprOldDroplet1 = cxt.int_val(0);
+                    expr exprOldDroplet2 = cxt.int_val(0);
+                    for (int p2 = 0; p2 < pf.getSize(); ++p2)
+                    {
+                        int sequenceNumOld1 = formu.computeDroplet(oldDropletNum1, p2, t - mixTime);
+                        exprOldDroplet1 = exprOldDroplet1 + exprVec[sequenceNumOld1];
+                        int sequenceNumOld2 = formu.computeDroplet(oldDropletNum2, p2, t - mixTime);
+                        exprOldDroplet2 = exprOldDroplet2 + exprVec[sequenceNumOld2];
+                    }
+                    solv.add(implies(exprVec[sequenceNum] == 1 && exprDropletPre == 0,
+                                     exprOldDroplet1 == 0 && exprOldDroplet2 == 0));
+
+                    // [t-mixTime,t)进行mix
+                    expr exprMixGraph = cxt.bool_val(false);
+                    {
+                        vector<vector<int> > mixerGraph;
+                        pf.computeGraph(mixerNum, p, mixerGraph);
+                        for (int tempGraphNum = 0; tempGraphNum < mixerGraph.size(); ++tempGraphNum)
+                        {
+                            expr exprGraphNum = cxt.int_val(0);
+                            assert(mixerGraph[tempGraphNum].size() == mixSize);
+                            for (int tempPositionNum = 0; tempPositionNum < mixerGraph[tempGraphNum].size(); ++tempPositionNum)
+                                for (int t2 = t - mixTime; t2 < t; ++t2)
+                                {
+                                    int sequenceNumMixer = formu.computeMixer(mixerNum, mixerGraph[tempGraphNum][tempPositionNum], t2);
+                                    exprGraphNum = exprGraphNum + exprVec[sequenceNumMixer];
+                                }
+                            exprMixGraph = exprMixGraph || (exprGraphNum == cxt.int_val(mixSize * mixTime));
+                        }
+                    }
+                    solv.add(implies(exprVec[sequenceNum] == 1 && exprDropletPre == 0,
+                                     exprMixGraph));
                 }
-                solv.add(implies(exprVec[sequenceNum] == 1 && exprDropletPre == 0, exprMixGraph));
-            }
+        }
     }
 }
 
@@ -544,41 +596,31 @@ void Prover::operationDetecting()
     for (int n = 0; n < pf.getDropletNum(); ++n)
     {
         int detectorNum = pf.findDetectorOfDroplet(n);
-        if (detectorNum < 0) // 不存在
-            continue;
-        int detectTime = pf.getDetectorVec()[detectorNum].getDetectTime();
-        for (int p = 0; p < pf.getSize(); ++p)
+        if (detectorNum >= 0) // 有detect
         {
-            int detectorExprSequenceNum = formu.computeDetector(detectorNum, p);
-            for (int t = 1; t < pf.getTime() - detectTime; ++t) // 满足要求的t
-            {
-                int detectingExprSequenceNumt = formu.computeDetecting(n, t);
-                int detectingExprSequenceNumt1 = formu.computeDetecting(n, t - 1);
-                int dropletExprSequenceNumt = formu.computeDroplet(n, p, t);
-                for (int t2 = t + 1; t2 < t + detectTime; ++t2)
+            int detectTime = pf.getDetectorVec()[detectorNum].getDetectTime();
+            for (int p = 0; p < pf.getSize(); ++p)
+                for (int t = 1; t < pf.getTime() - detectTime; ++t) // 满足要求的t
                 {
-                    int detectingExprSequenceNumt2 = formu.computeDetecting(n, t2);
-                    int dropletExprSequenceNumt2 = formu.computeDroplet(n, p, t2);
-                    solv.add(implies(exprVec[detectingExprSequenceNumt] == 1 && exprVec[detectingExprSequenceNumt1] == 0 && exprVec[dropletExprSequenceNumt] == 1, exprVec[detectorExprSequenceNum] == 1 && exprVec[detectingExprSequenceNumt2] == 1 && exprVec[dropletExprSequenceNumt2] == 1));
+                    int detectorExprSequenceNum = formu.computeDetector(detectorNum, p);
+                    int detectingExprSequenceNumt = formu.computeDetecting(n, t);
+                    int detectingExprSequenceNumtPre = formu.computeDetecting(n, t - 1);
+                    int dropletExprSequenceNumt = formu.computeDroplet(n, p, t);
+                    int dropletExprSequenceNumtPre = formu.computeDroplet(n, p, t - 1);
+                    for (int t2 = t + 1; t2 < t + detectTime; ++t2)
+                    {
+                        int detectingExprSequenceNumt2 = formu.computeDetecting(n, t2);
+                        int dropletExprSequenceNumt2 = formu.computeDroplet(n, p, t2);
+                        solv.add(implies(exprVec[detectingExprSequenceNumt] == 1 &&
+                                             exprVec[detectingExprSequenceNumtPre] == 0 &&
+                                             exprVec[dropletExprSequenceNumt] == 1,
+                                         exprVec[detectorExprSequenceNum] == 1 &&
+                                             exprVec[dropletExprSequenceNumtPre] == 0 &&
+                                             exprVec[detectingExprSequenceNumt2] == 1 &&
+                                             exprVec[dropletExprSequenceNumt2] == 1));
+                    }
                 }
-            }
         }
-    }
-
-    // objective
-    for (int n = 0; n < pf.getDropletNum(); ++n)
-    {
-        int detectorSequenceNum = pf.findDetectorOfDroplet(n);
-        if (detectorSequenceNum < 0) // 不存在
-            continue;
-        int detectTime = pf.getDetectorVec()[detectorSequenceNum].getDetectTime();
-        expr exprDetecting = cxt.int_val(0);
-        for (int t = 0; t < pf.getTime(); ++t)
-        {
-            int sequenceNum = formu.computeDetecting(n, t);
-            exprDetecting = exprDetecting + exprVec[sequenceNum];
-        }
-        solv.add(exprDetecting == detectTime);
     }
 }
 

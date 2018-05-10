@@ -85,7 +85,10 @@ void Solver::checkReadyForSolve()
     assert(pf.getDropletNum() != 0);
     // all droplets are either produced by a dispenser or produced by a mixer
     for (int i = 0; i < pf.getDropletNum(); ++i)
+    {
         assert(pf.findDispenserOfDroplet(i) >= 0 || pf.findMixerAsDroplet(i) >= 0);
+        assert(pf.findDispenserOfDroplet(i) < 0 || pf.findMixerAsDroplet(i) < 0);
+    }
 }
 
 } // namespace DMFB

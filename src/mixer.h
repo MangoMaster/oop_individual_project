@@ -39,6 +39,10 @@ class Mixer : public Droplet
         l = mixLength;
         w = mixWidth;
     }
+    int getMixSize() const
+    {
+        return mixLength * mixWidth;
+    }
     int getMixTime() const
     {
         return mixTime;

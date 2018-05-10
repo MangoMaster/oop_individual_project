@@ -141,6 +141,8 @@ void Profile::computeAroundChip(int position, std::vector<int> &edge) const
 
 void Profile::computeGraph(int mixerSequenceNum, int position, std::vector<std::vector<int> > &graph) const
 {
+    assert(mixerSequenceNum >= 0 && mixerSequenceNum < getMixerNum());
+    assert(position >= 0 && position < getSize());
     int x, y;
     computeXY(x, y, position);
     int xNum, yNum;

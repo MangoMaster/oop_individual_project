@@ -157,18 +157,18 @@ inline int Profile::getEdgeNum() const
 
 inline void Profile::setSinkerNum(int n)
 {
-  sinkerNum = n;
+  this->sinkerNum = n;
 }
 
 inline void Profile::setSize(int l, int w)
 {
-  length = l;
-  width = w;
+  this->length = l;
+  this->width = w;
 }
 
 inline void Profile::setTime(int t)
 {
-  time = t;
+  this->time = t;
 }
 
 inline int Profile::computePosition(int x, int y) const

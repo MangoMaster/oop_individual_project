@@ -13,12 +13,12 @@ namespace DMFB
 Formulator::Formulator(const Profile &p, z3::context &c, z3::expr_vector &ev)
     : pf(p), cxt(c), exprVec(ev)
 {
-    while (!exprVec.empty())
-        exprVec.pop_back();
 }
 
 void Formulator::formulate()
 {
+    while (!exprVec.empty()) // 每次formulate的时候都需重置exprVec
+        exprVec.pop_back();
     formulateDroplet();
     formulateMixer();
     formulateDetector();
