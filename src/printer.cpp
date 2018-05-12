@@ -14,7 +14,7 @@ Printer::Printer(const Profile &p, const z3::expr_vector &e, const Formulator &f
 {
 }
 
-void Printer::print(const string& printFile) const
+void Printer::print(const string &printFile) const
 {
     ofstream fout;
     fout.open(printFile.c_str());
@@ -56,8 +56,9 @@ void Printer::printDropletModel(const z3::model &mdl, ostream &fout) const
                 {
                     int x, y;
                     pf.computeXY(x, y, p);
-                    fout << "\tnumber_" << d
-                         << "_x_" << x << "_y_" << y
+                    fout << "    number_" << d
+                         << "  name_\"" << pf.getDropletVec()[d].getName() << "\""
+                         << "  x_" << x << "  y_" << y
                          << endl;
                 }
             }
@@ -79,8 +80,11 @@ void Printer::printMixerModel(const z3::model &mdl, ostream &fout) const
                 {
                     int x, y;
                     pf.computeXY(x, y, p);
-                    fout << "\tnumber_" << n
-                         << "_x_" << x << "_y_" << y
+                    fout << "    number_" << n
+                         << "  name_\"" << pf.getMixerVec()[n].getName() << "\""
+                         << "  droplet_name_\"" << pf.getMixerVec()[n].getDroplet1().getName() << "\""
+                         << "_\"" << pf.getMixerVec()[n].getDroplet1().getName() << "\""
+                         << "  x_" << x << " y_" << y
                          << endl;
                 }
             }
@@ -99,8 +103,8 @@ void Printer::printDetectorModel(const z3::model &mdl, ostream &fout) const
             {
                 int x, y;
                 pf.computeXY(x, y, p);
-                fout << "\tnumber_" << n
-                     << "_x_" << x << "_y_" << y
+                fout << "    number_" << n
+                     << "  x_" << x << "  y_" << y
                      << endl;
             }
         }
@@ -116,8 +120,8 @@ void Printer::printDispenserModel(const z3::model &mdl, ostream &fout) const
             int sequenceNum = formu.computeDispenser(n, e);
             if (mdl.eval(exprVec[sequenceNum]).get_numeral_int() == 1)
             {
-                fout << "\tnumber_" << n
-                     << "_edge_" << e
+                fout << "    number_" << n
+                     << "  edg_" << e
                      << endl;
             }
         }
@@ -132,7 +136,7 @@ void Printer::printSinkerModel(const z3::model &mdl, ostream &fout) const
         int sequenceNum = formu.computeSinker(e);
         if (mdl.eval(exprVec[sequenceNum]).get_numeral_int() == 1)
         {
-            fout << "\t_edge_" << e
+            fout << "    edge_" << e
                  << endl;
         }
     }
@@ -148,8 +152,8 @@ void Printer::printDetectingModel(const z3::model &mdl, ostream &fout) const
             int sequenceNum = formu.computeDetecting(d, t);
             if (mdl.eval(exprVec[sequenceNum]).get_numeral_int() == 1)
             {
-                fout << "\tdropletnumber_" << d
-                     << "_time_" << t
+                fout << "    droplet_number_" << d
+                     << "  time_" << t
                      << endl;
             }
         }

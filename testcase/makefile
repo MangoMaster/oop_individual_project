@@ -1,18 +1,21 @@
 SOURCES=$(wildcard *.cpp)
 OBJECTS=$(SOURCES:%.cpp=%.o)
 HEADERS=$(wildcard *.h)
-TARGET=example.exe 
+TARGET=testcase.exe 
 SRCLIB=$(wildcard ../src/*.a)
 Z3LIB=$(wildcard *.lib *.dll)
 INCLUDES=-I../src -I../z3/src/api/c++ -I../z3/src/api
 
 all: $(TARGET)
 
-$(TARGET): $(OBJECTS) $(SRCLIB) $(Z3LIB) $(HEADERS)
-	g++ $(OBJECTS) $(SRCLIB) $(Z3LIB) -o $(TARGET)
+$(TARGET): $(OBJECTS) main.o $(SRCLIB) $(Z3LIB) $(HEADERS)
+	g++ $(OBJECTS) main.o $(SRCLIB) $(Z3LIB) -o $(TARGET)
 
-%.o: %.cpp $(HEADERS)
-	g++ $< -c  $(INCLUDES) -o $@
+main.o: main.cxx $(HEADERS) $(SRCLIB) $(Z3LIB)
+	g++ $< -c $(INCLUDES) -w -o $@
+
+%.o: %.cpp $(HEADERS) $(SRCLIB) $(Z3LIB)
+	g++ $< -c $(INCLUDES) -w -o $@
 
 .PHONY: clean
 clean: 

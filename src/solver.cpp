@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <cassert>
 #include "solver.h"
@@ -27,6 +28,7 @@ void Solver::solve()
         int pfX, pfY;
         pf.getSize(pfX, pfY);
         assert(pfX >= 0 && pfY >= 0 && pf.getTime() >= 0);
+        cout << "Proving..." << endl;
         _solve();
     }
     else if (objective.compare("min time") == 0)
@@ -38,6 +40,7 @@ void Solver::solve()
         for (int tempTime = 1; tempTime <= MAXTIME; ++tempTime)
         {
             pf.setTime(tempTime);
+            cout << "Calculating min time...\tNow time:" << tempTime << endl;
             _solve();
             if (solv.check() == sat)
                 break;
@@ -52,6 +55,8 @@ void Solver::solve()
             for (int tempX = tempY; tempX <= MAXLENGTH; ++tempX) // x>=y
             {
                 pf.setSize(tempX, tempY);
+                cout << "Calculating min size...\tNow size:"
+                     << "(" << tempX << "," << tempY << ")" << endl;
                 _solve();
                 if (solv.check() == sat)
                     break;
@@ -64,7 +69,7 @@ void Solver::solve()
         assert(false);
 }
 
-void Solver::print(const std::string& printFile)
+void Solver::print(const std::string &printFile)
 {
     prin.print(printFile);
 }
