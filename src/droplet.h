@@ -28,6 +28,10 @@ class Droplet
     {
         return this->name;
     }
+    int getSequenceNum() const
+    {
+        return this->sequenceNum;
+    }
 
     /*********************setter**********************/
     void setName(const std::string &m)

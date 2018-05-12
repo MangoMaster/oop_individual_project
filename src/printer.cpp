@@ -19,6 +19,7 @@ void Printer::print(const string &printFile) const
     ofstream fout;
     fout.open(printFile.c_str());
 
+    cout << "Printing into file...\t" << printFile << endl;
     fout << solv.check() << endl
          << endl;
     if (solv.check() == sat)
@@ -83,7 +84,7 @@ void Printer::printMixerModel(const z3::model &mdl, ostream &fout) const
                     fout << "    number_" << n
                          << "  name_\"" << pf.getMixerVec()[n].getName() << "\""
                          << "  droplet_name_\"" << pf.getMixerVec()[n].getDroplet1().getName() << "\""
-                         << "_\"" << pf.getMixerVec()[n].getDroplet1().getName() << "\""
+                         << "_\"" << pf.getMixerVec()[n].getDroplet2().getName() << "\""
                          << "  x_" << x << " y_" << y
                          << endl;
                 }
@@ -121,7 +122,7 @@ void Printer::printDispenserModel(const z3::model &mdl, ostream &fout) const
             if (mdl.eval(exprVec[sequenceNum]).get_numeral_int() == 1)
             {
                 fout << "    number_" << n
-                     << "  edg_" << e
+                     << "  edge_" << e
                      << endl;
             }
         }

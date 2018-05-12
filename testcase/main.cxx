@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include <iostream>
 #include "solver.h"
 #include "testcase.h"
 
@@ -6,6 +8,7 @@ using namespace DMFB;
 
 int main()
 {
-    TestCase::example();
+    TestCase::exampleMultiMix();
+    system("pause");
     return 0;
 }

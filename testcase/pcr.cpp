@@ -1,4 +1,4 @@
-#include "solver.h"
+#include <iostream>
 #include "testcase.h"
 
 using namespace std;
@@ -6,6 +6,8 @@ using namespace DMFB;
 
 void TestCase::examplePcr()
 {
+    cout << "Solving PCR example..." << endl;
+
     Profile p;
 
     Droplet droplet1("Tris-HCL (PH 8.3)");
@@ -86,4 +88,6 @@ void TestCase::examplePcr()
     s.setObjective("min size");
     s.solve();
     s.print("example_pcr.txt");
+
+    cout << endl;
 }

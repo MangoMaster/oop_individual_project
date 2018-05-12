@@ -1,4 +1,4 @@
-#include "solver.h"
+#include <iostream>
 #include "testcase.h"
 
 using namespace std;
@@ -7,6 +7,8 @@ using namespace DMFB;
 // shown in the paper
 void TestCase::exampleVitroDiagnostics()
 {
+    cout << "Solving Vitro Diagnostics example..." << endl;
+
     Profile p;
 
     Droplet droplet1("Plasma sample");
@@ -87,10 +89,12 @@ void TestCase::exampleVitroDiagnostics()
     p.addMixer(mixer6);
     p.addDetector(mixer6, 13);
 
-    p.setSize(3, 6);
+    p.setSize(5, 8);
 
     Solver s(p);
     s.setObjective("min time");
     s.solve();
     s.print("example_vitro_diagnostics");
+
+    cout << endl;
 }

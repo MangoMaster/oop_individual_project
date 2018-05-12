@@ -1,4 +1,4 @@
-#include "solver.h"
+#include <iostream>
 #include "testcase.h"
 
 using namespace std;
@@ -6,6 +6,8 @@ using namespace DMFB;
 
 void TestCase::exampleMix()
 {
+    cout << "Solving mix example..." << endl;
+
     Profile p;
     Droplet droplet1("droplet1");
     p.addDroplet(droplet1);
@@ -29,4 +31,6 @@ void TestCase::exampleMix()
     s.setObjective("min time");
     s.solve();
     s.print("example_mix.txt");
+
+    cout << endl;
 }

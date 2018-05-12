@@ -1,3 +1,4 @@
+#include <iostream>
 #include "solver.h"
 #include "testcase.h"
 
