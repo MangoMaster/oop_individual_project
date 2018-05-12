@@ -1,6 +1,6 @@
-SOURCES=$(wildcard *.cpp ../src/*.cpp)
+SOURCES=$(wildcard *.cpp)
 OBJECTS=$(SOURCES:%.cpp=%.o)
-HEADERS=$(wildcard *.h ../src/*.h)
+HEADERS=$(wildcard *.h)
 TARGET=example.exe 
 SRCLIB=$(wildcard ../src/*.a)
 Z3LIB=$(wildcard *.lib *.dll)
@@ -23,5 +23,6 @@ explain:
 	@echo "sources: $(SOURCES)"
 	@echo "objects: $(OBJECTS)"
 	@echo "headers: $(HEADERS)"
+	@echo "srclib: $(SRCLIB)"
 	@echo "z3lib: $(Z3LIB)"
 	@echo "target: $(TARGET)"
