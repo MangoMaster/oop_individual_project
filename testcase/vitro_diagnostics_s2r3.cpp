@@ -5,17 +5,17 @@ using namespace std;
 using namespace DMFB;
 
 // shown in the paper
-void TestCase::exampleVitroDiagnostics()
+void TestCase::exampleVitroDiagnosticsS2R3()
 {
-    cout << "Solving Vitro Diagnostics example..." << endl;
+    cout << "Solving Vitro Diagnostics S2R3 example..." << endl;
 
     Profile p;
 
-    Droplet droplet1("Plasma sample");
+    Droplet droplet1("sample1_1");
     p.addDroplet(droplet1);
-    Droplet droplet2("Plasma sample");
+    Droplet droplet2("sample1_2");
     p.addDroplet(droplet2);
-    Droplet droplet3("Plasma sample");
+    Droplet droplet3("sample1_3");
     p.addDroplet(droplet3);
 
     vector<Droplet> droplet123Vec;
@@ -24,11 +24,11 @@ void TestCase::exampleVitroDiagnostics()
     droplet123Vec.push_back(droplet3);
     p.addDispenser(droplet123Vec);
 
-    Droplet droplet4("Serum sample");
+    Droplet droplet4("sample2_1");
     p.addDroplet(droplet4);
-    Droplet droplet5("Serum sample");
+    Droplet droplet5("sample2_2");
     p.addDroplet(droplet5);
-    Droplet droplet6("Serum sample");
+    Droplet droplet6("sample2_3");
     p.addDroplet(droplet6);
 
     vector<Droplet> droplet456Vec;
@@ -37,17 +37,17 @@ void TestCase::exampleVitroDiagnostics()
     droplet456Vec.push_back(droplet6);
     p.addDispenser(droplet456Vec);
 
-    Droplet droplet7("Glucose assay reagent");
+    Droplet droplet7("reagent1_1");
     p.addDroplet(droplet7);
-    Droplet droplet8("lactate assay reagent");
+    Droplet droplet8("reagent2_1");
     p.addDroplet(droplet8);
-    Droplet droplet9("Pyruvate assay reagent");
+    Droplet droplet9("reagent3_1");
     p.addDroplet(droplet9);
-    Droplet droplet10("Glucose assay reagent");
+    Droplet droplet10("reagent1_2");
     p.addDroplet(droplet10);
-    Droplet droplet11("lactate assay reagent");
+    Droplet droplet11("reagent2_2");
     p.addDroplet(droplet11);
-    Droplet droplet12("Pyruvate assay reagent");
+    Droplet droplet12("reagent3_2");
     p.addDroplet(droplet12);
 
     vector<Droplet> droplet7_10Vec;
@@ -65,36 +65,48 @@ void TestCase::exampleVitroDiagnostics()
     droplet9_12Vec.push_back(droplet12);
     p.addDispenser(droplet9_12Vec);
 
-    Mixer mixer1(droplet1, droplet7, 2, 4, 5, "mixer1");
+    Mixer mixer1(droplet1, droplet7, 1, 2, 2, "mixer1");
     p.addMixer(mixer1);
-    p.addDetector(mixer1, 10);
+    p.addDetector(mixer1, 3);
 
-    Mixer mixer2(droplet2, droplet8, 2, 4, 5, "mixer2");
+    Mixer mixer2(droplet2, droplet8, 1, 2, 2, "mixer2");
     p.addMixer(mixer2);
-    p.addDetector(mixer2, 8);
+    p.addDetector(mixer2, 3);
 
-    Mixer mixer3(droplet3, droplet9, 2, 4, 5, "mixer3");
+    Mixer mixer3(droplet3, droplet9, 1, 2, 2, "mixer3");
     p.addMixer(mixer3);
-    p.addDetector(mixer3, 13);
+    p.addDetector(mixer3, 3);
 
-    Mixer mixer4(droplet4, droplet10, 2, 4, 5, "mixer4");
+    Mixer mixer4(droplet4, droplet10, 1, 2, 2, "mixer4");
     p.addMixer(mixer4);
-    p.addDetector(mixer4, 10);
+    p.addDetector(mixer4, 3);
 
-    Mixer mixer5(droplet5, droplet11, 2, 4, 5, "mixer5");
+    Mixer mixer5(droplet5, droplet11, 1, 2, 2, "mixer5");
     p.addMixer(mixer5);
-    p.addDetector(mixer5, 8);
+    p.addDetector(mixer5, 3);
 
-    Mixer mixer6(droplet6, droplet12, 2, 4, 5, "mixer6");
+    Mixer mixer6(droplet6, droplet12, 1, 2, 2, "mixer6");
     p.addMixer(mixer6);
-    p.addDetector(mixer6, 13);
-
-    p.setSize(5, 8);
+    p.addDetector(mixer6, 3);
 
     Solver s(p);
     s.setObjective("min time");
+
+    p.setSize(4, 4);
     s.solve();
-    s.print("example_vitro_diagnostics");
+    s.print("example_vitro_diagnostics_s2r3_size44");
+    
+    p.setSize(3, 6);
+    s.solve();
+    s.print("example_vitro_diagnostics_s2r3_size36");
+    
+    p.setSize(4, 5);
+    s.solve();
+    s.print("example_vitro_diagnostics_s2r3_size45");
+
+    p.setSize(4, 6);
+    s.solve();
+    s.print("example_vitro_diagnostics_s2r3_size46");
 
     cout << endl;
 }

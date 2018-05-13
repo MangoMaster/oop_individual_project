@@ -7,12 +7,16 @@ class TestCase
 {
 public:
   static void example();
-  static void examplePcr();
-  static void exampleVitroDiagnostics();
   static void exampleDetect();
   static void exampleMix();
   static void exampleMultiMix();
   static void exampleMixerMix();
+  static void exampleVitroDiagnostics();
+  static void exampleVitroDiagnosticsS1R2();
+  static void exampleVitroDiagnosticsS1R3();
+  static void exampleVitroDiagnosticsS2R2();
+  static void exampleVitroDiagnosticsS2R3();
+  static void examplePcr();
 
 private:
 };

@@ -21,11 +21,11 @@ void TestCase::exampleMix()
     droplet2Vec.push_back(droplet2);
     p.addDispenser(droplet2Vec);
 
-    Mixer mixer3(droplet1, droplet2, 2, 3, 5, "mixer3");
-    p.addMixer(mixer3);
-    p.addDetector(mixer3, 5);
+    Mixer mixer1(droplet1, droplet2, 2, 3, 5, "mixer1");
+    p.addMixer(mixer1);
+    p.addDetector(mixer1, 5);
 
-    p.setSize(4, 5);
+    p.setSize(2, 3);
 
     Solver s(p);
     s.setObjective("min time");

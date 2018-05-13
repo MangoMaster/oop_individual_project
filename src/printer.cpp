@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "printer.h"
 #include "z3++.h"
 
@@ -48,7 +49,7 @@ void Printer::printDropletModel(const z3::model &mdl, ostream &fout) const
     fout << "droplet:" << endl;
     for (int t = 0; t < pf.getTime(); ++t)
     {
-        fout << "  time_" << t << endl;
+        fout << "  time_" << t << ":" << endl;
         for (int d = 0; d < pf.getDropletNum(); ++d)
             for (int p = 0; p < pf.getSize(); ++p)
             {
@@ -72,7 +73,7 @@ void Printer::printMixerModel(const z3::model &mdl, ostream &fout) const
     fout << "mixer:" << endl;
     for (int t = 0; t < pf.getTime(); ++t)
     {
-        fout << "  time_" << t << endl;
+        fout << "  time_" << t << ":" << endl;
         for (int n = 0; n < pf.getMixerNum(); ++n)
             for (int p = 0; p < pf.getSize(); ++p)
             {
@@ -83,9 +84,11 @@ void Printer::printMixerModel(const z3::model &mdl, ostream &fout) const
                     pf.computeXY(x, y, p);
                     fout << "    number_" << n
                          << "  name_\"" << pf.getMixerVec()[n].getName() << "\""
+                         << "  x_" << x << " y_" << y
+                         << "  droplet_number_" << pf.getMixerVec()[n].getDroplet1().getSequenceNum()
+                         << "_" << pf.getMixerVec()[n].getDroplet2().getSequenceNum()
                          << "  droplet_name_\"" << pf.getMixerVec()[n].getDroplet1().getName() << "\""
                          << "_\"" << pf.getMixerVec()[n].getDroplet2().getName() << "\""
-                         << "  x_" << x << " y_" << y
                          << endl;
                 }
             }
@@ -106,6 +109,8 @@ void Printer::printDetectorModel(const z3::model &mdl, ostream &fout) const
                 pf.computeXY(x, y, p);
                 fout << "    number_" << n
                      << "  x_" << x << "  y_" << y
+                     << "  droplet_number_" << pf.getDetectorVec()[n].getDroplet().getSequenceNum()
+                     << "  droplet_name_\"" << pf.getDetectorVec()[n].getDroplet().getName() << "\""
                      << endl;
             }
         }
@@ -122,8 +127,15 @@ void Printer::printDispenserModel(const z3::model &mdl, ostream &fout) const
             if (mdl.eval(exprVec[sequenceNum]).get_numeral_int() == 1)
             {
                 fout << "    number_" << n
-                     << "  edge_" << e
-                     << endl;
+                     << "  edge_" << e;
+                vector<Droplet> dropletTemp = pf.getDispenserVec()[n].getDropletVec();
+                fout << "  droplet_number";
+                for (int i = 0; i < dropletTemp.size(); ++i)
+                    fout << "_" << dropletTemp[i].getSequenceNum();
+                fout << "  droplet_name";
+                for (int i = 0; i < dropletTemp.size(); ++i)
+                    fout << "_\"" << dropletTemp[i].getSequenceNum() << "\"";
+                fout << endl;
             }
         }
 }
@@ -154,6 +166,7 @@ void Printer::printDetectingModel(const z3::model &mdl, ostream &fout) const
             if (mdl.eval(exprVec[sequenceNum]).get_numeral_int() == 1)
             {
                 fout << "    droplet_number_" << d
+                     << "  droplet_name_\"" << pf.getDropletVec()[d].getName()
                      << "  time_" << t
                      << endl;
             }

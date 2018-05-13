@@ -30,14 +30,14 @@ void TestCase::exampleMixerMix()
 
     Mixer mixer1(droplet1, droplet2, 2, 2, 3, "mixer1");
     p.addMixer(mixer1);
-    Detector detector1(mixer1, 3);
+    Detector detector1(mixer1, 2);
     p.addDetector(detector1);
 
-    Mixer mixer2(droplet3, mixer1, 2, 2, 3, "mixer2");
+    Mixer mixer2(droplet3, mixer1, 4, 1, 4, "mixer2");
     p.addMixer(mixer2);
     p.addDetector(mixer2, 3);
 
-    p.setTime(20);
+    p.setTime(15);
 
     Solver s(p);
     s.setObjective("min size");

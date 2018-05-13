@@ -893,19 +893,18 @@ void Prover::operationDetecting()
         if (detectorNum >= 0) // 有detect
         {
             int detectTime = pf.getDetectorVec()[detectorNum].getDetectTime();
-            for (int p = 0; p < pf.getSize(); ++p)
-                for (int t = 1; t < pf.getTime() - detectTime; ++t) // 满足要求的t
+            for (int t = 1; t < pf.getTime() - detectTime; ++t) // 满足要求的t
+            {
+                int detectingSequenceNumt = formu.computeDetecting(n, t);
+                int detectingSequenceNumtPre = formu.computeDetecting(n, t - 1);
+                for (int t2 = t + 1; t2 < t + detectTime; ++t2)
                 {
-                    int detectingSequenceNumt = formu.computeDetecting(n, t);
-                    int detectingSequenceNumtPre = formu.computeDetecting(n, t - 1);
-                    for (int t2 = t + 1; t2 < t + detectTime; ++t2)
-                    {
-                        int detectingSequenceNumt2 = formu.computeDetecting(n, t2);
-                        solv.add(implies(exprVec[detectingSequenceNumt] == 1 &&
-                                             exprVec[detectingSequenceNumtPre] == 0,
-                                         exprVec[detectingSequenceNumt2] == 1));
-                    }
+                    int detectingSequenceNumt2 = formu.computeDetecting(n, t2);
+                    solv.add(implies(exprVec[detectingSequenceNumt] == 1 &&
+                                         exprVec[detectingSequenceNumtPre] == 0,
+                                     exprVec[detectingSequenceNumt2] == 1));
                 }
+            }
         }
     }
 

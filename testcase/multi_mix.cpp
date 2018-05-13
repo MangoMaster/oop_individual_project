@@ -24,7 +24,7 @@ void TestCase::exampleMultiMix()
 
     Mixer mixer1(droplet1, droplet2, 2, 3, 3, "mixer1");
     p.addMixer(mixer1);
-    p.addDetector(mixer1, 3);
+    p.addDetector(mixer1, 4);
 
     Droplet droplet3("droplet3");
     p.addDroplet(droplet3);
@@ -40,9 +40,9 @@ void TestCase::exampleMultiMix()
 
     Mixer mixer2(droplet3, droplet4, 2, 2, 3, "mixer2");
     p.addMixer(mixer2);
-    p.addDetector(mixer2, 1);
+    p.addDetector(mixer2, 3);
 
-    p.setTime(20);
+    p.setTime(12);
 
     Solver s(p);
     s.setObjective("min size");

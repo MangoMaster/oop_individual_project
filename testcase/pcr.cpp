@@ -22,7 +22,7 @@ void TestCase::examplePcr()
     droplet2Vec.push_back(droplet2);
     p.addDispenser(droplet2Vec);
 
-    Mixer mixer1(droplet1, droplet2, 2, 2, 10, "mixer1");
+    Mixer mixer1(droplet1, droplet2, 1, 2, 3, "mixer1");
     p.addMixer(mixer1);
 
     Droplet droplet3("Bovine serum albumin");
@@ -37,11 +37,10 @@ void TestCase::examplePcr()
     droplet4Vec.push_back(droplet4);
     p.addDispenser(droplet4Vec);
 
-    Mixer mixer2(droplet3, droplet4, 1, 4, 5, "mixer2");
+    Mixer mixer2(droplet3, droplet4, 1, 2, 3, "mixer2");
     p.addMixer(mixer2);
 
-    // problem: what is the mixer size and mix time?
-    Mixer mixer3(mixer1, mixer2, 0, 0, 0, "mixer3");
+    Mixer mixer3(mixer1, mixer2, 1, 2, 3, "mixer3");
     p.addMixer(mixer3);
 
     Droplet droplet5("Primer");
@@ -56,7 +55,7 @@ void TestCase::examplePcr()
     droplet6Vec.push_back(droplet6);
     p.addDispenser(droplet6Vec);
 
-    Mixer mixer4(droplet5, droplet6, 2, 3, 6, "mixer4");
+    Mixer mixer4(droplet5, droplet6, 1, 2, 3, "mixer4");
     p.addMixer(mixer4);
 
     Droplet droplet7("AmpliTag DNA");
@@ -71,15 +70,13 @@ void TestCase::examplePcr()
     droplet8Vec.push_back(droplet8);
     p.addDispenser(droplet8Vec);
 
-    Mixer mixer5(droplet7, droplet8, 2, 4, 3, "mixer5");
+    Mixer mixer5(droplet7, droplet8, 1, 2, 3, "mixer5");
     p.addMixer(mixer5);
 
-    // problem: what is the mixer size and mix time?
-    Mixer mixer6(mixer4, mixer5, 0, 0, 0, "mixer6");
+    Mixer mixer6(mixer4, mixer5, 1, 2, 3, "mixer6");
     p.addMixer(mixer6);
 
-    // problem: what is the mixer size and mix time?
-    Mixer mixer7(mixer3, mixer6, 0, 0, 0, "mixer7");
+    Mixer mixer7(mixer3, mixer6, 1, 2, 3, "mixer7");
     p.addMixer(mixer7);
 
     p.setTime(20);
