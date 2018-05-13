@@ -23,12 +23,16 @@ Solver::Solver(Profile &p, const std::string &o /* = ""*/)
 void Solver::solve()
 {
     checkReadyForSolve();
+    cout << "objective:" << getObjective() << endl;
     if (objective.compare("prove") == 0)
     {
         int pfX, pfY;
         pf.getSize(pfX, pfY);
         assert(pfX >= 0 && pfY >= 0 && pf.getTime() >= 0);
-        cout << "Proving..." << endl;
+        cout << "size:"
+             << "(" << pfX << "," << pfY << ")" << endl;
+        cout << "time:" << pf.getTime() << endl;
+        cout << "Solving..." << endl;
         _solve();
     }
     else if (objective.compare("min time") == 0)
@@ -36,11 +40,13 @@ void Solver::solve()
         int pfX, pfY;
         pf.getSize(pfX, pfY);
         assert(pfX >= 0 && pfY >= 0);
+        cout << "size:"
+             << "(" << pfX << "," << pfY << ")" << endl;
         //loop and increase time
         for (int tempTime = 1; tempTime <= MAXTIME; ++tempTime)
         {
             pf.setTime(tempTime);
-            cout << "Calculating min time...\tNow time:" << tempTime << endl;
+            cout << "Solving...\tNow time:" << tempTime << endl;
             _solve();
             if (solv.check() == sat)
                 break;
@@ -49,13 +55,14 @@ void Solver::solve()
     else if (objective.compare("min size") == 0)
     {
         assert(pf.getTime() != 0);
+        cout << "time:" << pf.getTime() << endl;
         //loop and increase size
         for (int tempY = 1; tempY <= MAXLENGTH; ++tempY)
         {
             for (int tempX = tempY; tempX <= MAXLENGTH; ++tempX) // x>=y
             {
                 pf.setSize(tempX, tempY);
-                cout << "Calculating min size...\tNow size:"
+                cout << "Solving...\tNow size:"
                      << "(" << tempX << "," << tempY << ")" << endl;
                 _solve();
                 if (solv.check() == sat)

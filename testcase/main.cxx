@@ -8,7 +8,7 @@ using namespace DMFB;
 
 int main()
 {
-    TestCase::exampleMultiMix();
+    TestCase::example();
     system("pause");
     return 0;
 }

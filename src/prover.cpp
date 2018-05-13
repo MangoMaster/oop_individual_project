@@ -743,7 +743,7 @@ void Prover::operationDisappear()
 
 void Prover::operationMixing()
 {
-    // new droplet有必须mix过
+    // [0,mixTime+2)无new droplet
     for (int n = 0; n < pf.getDropletNum(); ++n)
     {
         int mixerNum = pf.findMixerAsDroplet(n);
@@ -751,19 +751,11 @@ void Prover::operationMixing()
         {
             assert(pf.findDispenserOfDroplet(n) < 0); // no dispenser
             int mixTime = pf.getMixerVec()[mixerNum].getMixTime();
-            int mixSize = pf.getMixerVec()[mixerNum].getMixSize();
             for (int p = 0; p < pf.getSize(); ++p)
-                for (int t = 0; t < pf.getTime(); ++t)
+                for (int t = 0; t < pf.getTime() && t < mixTime + 2; ++t)
                 {
-                    expr exprMixer = cxt.int_val(0);
-                    for (int p2 = 0; p2 < pf.getSize(); ++p2)
-                        for (int t2 = 0; t2 < t; ++t2)
-                        {
-                            int sequenceNumMixerPre = formu.computeMixer(mixerNum, p2, t2);
-                            exprMixer = exprMixer + exprVec[sequenceNumMixerPre];
-                        }
                     int sequenceNum = formu.computeDroplet(n, p, t);
-                    solv.add(implies(exprVec[sequenceNum] == 1, exprMixer == mixSize * mixTime));
+                    solv.add(exprVec[sequenceNum] == 0);
                 }
         }
     }
@@ -842,12 +834,16 @@ void Prover::operationMixing()
     {
         int dropletNum1, dropletNum2;
         pf.findDropletOfMixer(n, dropletNum1, dropletNum2);
-        expr exprMixer = cxt.bool_val(false);
-        for (int p = 0; p < pf.getSize(); ++p)
-            for (int t = 1; t < pf.getTime(); ++t) // t==0时t-1不存在
+        for (int t = 1; t < pf.getTime(); ++t) // t==0时t-1不存在
+        {
+            expr exprMixer = cxt.int_val(0);
+            expr exprMixerPre = cxt.int_val(0);
+            expr exprOldDroplet = cxt.bool_val(false);
+            for (int p = 0; p < pf.getSize(); ++p)
             {
                 expr exprOldDroplet1Pre = cxt.int_val(0);
                 expr exprOldDroplet2Pre = cxt.int_val(0);
+                // N-5 neighbor
                 {
                     int x, y;
                     pf.computeXY(x, y, p);
@@ -867,11 +863,13 @@ void Prover::operationMixing()
                     }
                 }
                 int sequenceNumMixer = formu.computeMixer(n, p, t);
+                exprMixer = exprMixer + exprVec[sequenceNumMixer];
                 int sequenceNumMixerPre = formu.computeMixer(n, p, t - 1);
-                exprMixer = exprMixer || implies(exprVec[sequenceNumMixer] == 1 && exprVec[sequenceNumMixerPre] == 0,
-                                                 exprOldDroplet1Pre == 1 && exprOldDroplet2Pre == 1);
+                exprMixerPre = exprMixerPre + exprVec[sequenceNumMixerPre];
+                exprOldDroplet = exprOldDroplet || (exprVec[sequenceNumMixer] == 1 && exprOldDroplet1Pre == 1 && exprOldDroplet2Pre == 1);
             }
-        solv.add(exprMixer);
+            solv.add(implies(exprMixer >= 1 && exprMixerPre == 0, exprOldDroplet));
+        }
     }
 }
 

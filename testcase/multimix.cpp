@@ -34,7 +34,7 @@ void TestCase::exampleMultiMix()
     vector<Droplet> dropletVec4;
     dropletVec4.push_back(droplet4);
     p.addDispenser(dropletVec4);*/
-    Mixer mixer2(droplet2, mixer1, 2, 2, 1);
+    Mixer mixer2(droplet2, mixer1, 2, 2, 1, "mixer2");
     p.addMixer(mixer2);
     p.addDetector(mixer2, 3);
 
