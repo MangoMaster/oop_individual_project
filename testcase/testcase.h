@@ -12,6 +12,7 @@ public:
   static void exampleDetect();
   static void exampleMix();
   static void exampleMultiMix();
+  static void exampleMixerMix();
 
 private:
 };

@@ -24,7 +24,7 @@ void Profile::addMixer(Mixer &m)
     assert(m.getDroplet1().sequenceNum >= 0 && m.getDroplet2().sequenceNum >= 0);
     // use sequenceNum to identify the mixer (is-a droplet)
     m.sequenceNum = dropletVec.size();
-    dropletVec.push_back(m); // object slicing
+    dropletVec.push_back(static_cast<Droplet>(m)); // object slicing
     // use sequenceNumMixer to identify the mixer
     m.sequenceNumMixer = mixerVec.size();
     mixerVec.push_back(m);
@@ -96,6 +96,30 @@ int Profile::findMixerAsDroplet(int dropletSequenceNum) const
         if (mixerVec[i].sequenceNum == dropletSequenceNum)
             return i;
     return -1;
+}
+
+// given mixer, find the droplet it produces
+// given sequenceNum in mixerVec, return sequenceNum in dropletVec
+int Profile::findDropletAsMixer(int mixerSequenceNum) const
+{
+    assert(mixerSequenceNum >= 0 && mixerSequenceNum < getMixerNum());
+    return mixerVec[mixerSequenceNum].sequenceNum;
+}
+
+// given droplet, find the droplet with the same mixer
+// given sequenceNum in dropletVec, return sequenceNum in dropletVec or -1
+int Profile::findDropletSameMixer(int dropletSequenceNum) const
+{
+    assert(dropletSequenceNum >= 0 && dropletSequenceNum < getDropletNum());
+    int mixerNum = findMixerOfDroplet(dropletSequenceNum);
+    if (mixerNum == -1)
+        return -1;
+    else if (dropletSequenceNum == mixerVec[mixerNum].getDroplet1().sequenceNum)
+        return mixerVec[mixerNum].getDroplet2().sequenceNum;
+    else if(dropletSequenceNum == mixerVec[mixerNum].getDroplet2().sequenceNum)
+        return mixerVec[mixerNum].getDroplet1().sequenceNum;
+    else
+        assert(false);
 }
 
 // given droplet, find its detector (if existed)

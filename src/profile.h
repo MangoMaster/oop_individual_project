@@ -59,6 +59,12 @@ public:
   // given droplet, find the mixer that produces it (if existed)
   // given sequenceNum in dropletVec, return sequenceNum in mixerVec or -1
   int findMixerAsDroplet(int dropletSequenceNum) const;
+  // given mixer, find the droplet it produces
+  // given sequenceNum in mixerVec, return sequenceNum in dropletVec
+  int findDropletAsMixer(int mixerSequenceNum) const;
+  // given droplet, find the droplet with the same mixer
+  // given sequenceNum in dropletVec, return sequenceNum in dropletVec or -1
+  int findDropletSameMixer(int dropletSequenceNum) const;
   // given droplet, find its detector (if existed)
   // given sequenceNum in dropletVec, return sequenceNum in dispenserVec or -1
   int findDetectorOfDroplet(int dropletSequenceNum) const;

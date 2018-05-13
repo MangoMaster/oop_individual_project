@@ -10,6 +10,7 @@ void TestCase::example()
     exampleDetect();
     exampleMix();
     exampleMultiMix();
-    examplePcr();
+    exampleMixerMix();
     exampleVitroDiagnostics();
+    examplePcr();
 }
