@@ -12,7 +12,7 @@ $(TARGET): $(OBJECTS) $(Z3LIB) $(HEADERS)
 	g++ $(OBJECTS) $(Z3LIB) -o $(TARGET)
 
 %.o: %.cpp $(HEADERS)
-	g++ $< -c  $(INCLUDES) -o $@
+	g++ $< -c  $(INCLUDES) -std=c++11 -o $@
 
 $(LIB): $(OBJECTS) $(HEADERS)
 	ar -rv $(LIB) $(OBJECTS)

@@ -4,7 +4,6 @@
 using namespace std;
 using namespace DMFB;
 
-// shown in the paper
 void TestCase::exampleVitroDiagnosticsS2R3()
 {
     cout << "Solving Vitro Diagnostics S2R3 example..." << endl;
@@ -91,22 +90,63 @@ void TestCase::exampleVitroDiagnosticsS2R3()
 
     Solver s(p);
     s.setObjective("min time");
+    Timer t;
+
+    p.setSize(5, 2);
+    t.setStartTime();
+    s.solve();
+    t.setEndTime();
+    s.print("example_vitro_diagnostics_s2r3_size52.txt");
+    t.print("example_vitro_diagnostics_s2r3_size52_time.txt");
+
+    p.setSize(4, 3);
+    t.setStartTime();
+    s.solve();
+    t.setEndTime();
+    s.print("example_vitro_diagnostics_s2r3_size43.txt");
+    t.print("example_vitro_diagnostics_s2r3_size43_time.txt");
+
+    p.setSize(5, 3);
+    t.setStartTime();
+    s.solve();
+    t.setEndTime();
+    s.print("example_vitro_diagnostics_s2r3_size53.txt");
+    t.print("example_vitro_diagnostics_s2r3_size53_time.txt");
 
     p.setSize(4, 4);
+    t.setStartTime();
     s.solve();
-    s.print("example_vitro_diagnostics_s2r3_size44");
-    
-    p.setSize(3, 6);
-    s.solve();
-    s.print("example_vitro_diagnostics_s2r3_size36");
-    
-    p.setSize(4, 5);
-    s.solve();
-    s.print("example_vitro_diagnostics_s2r3_size45");
+    t.setEndTime();
+    s.print("example_vitro_diagnostics_s2r3_size44.txt");
+    t.print("example_vitro_diagnostics_s2r3_size44_time.txt");
 
-    p.setSize(4, 6);
+    p.setSize(6, 3);
+    t.setStartTime();
     s.solve();
-    s.print("example_vitro_diagnostics_s2r3_size46");
+    t.setEndTime();
+    s.print("example_vitro_diagnostics_s2r3_size63.txt");
+    t.print("example_vitro_diagnostics_s2r3_size63_time.txt");
+
+    p.setSize(5, 4);
+    t.setStartTime();
+    s.solve();
+    t.setEndTime();
+    s.print("example_vitro_diagnostics_s2r3_size54.txt");
+    t.print("example_vitro_diagnostics_s2r3_size54_time.txt");
+
+    p.setSize(6, 4);
+    t.setStartTime();
+    s.solve();
+    t.setEndTime();
+    s.print("example_vitro_diagnostics_s2r3_size64.txt");
+    t.print("example_vitro_diagnostics_s2r3_size64_time.txt");
+
+    p.setSize(5, 5);
+    t.setStartTime();
+    s.solve();
+    t.setEndTime();
+    s.print("example_vitro_diagnostics_s2r3_size55.txt");
+    t.print("example_vitro_diagnostics_s2r3_size55_time.txt");
 
     cout << endl;
 }

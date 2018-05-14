@@ -55,7 +55,7 @@ private:
   void checkReadyForSolve();
 
   const int MAXTIME = 20;
-  const int MAXLENGTH = 7;
+  const int MAXLENGTH = 6;
 };
 
 } // namespace DMFB

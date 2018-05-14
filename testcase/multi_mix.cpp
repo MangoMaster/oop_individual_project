@@ -42,12 +42,17 @@ void TestCase::exampleMultiMix()
     p.addMixer(mixer2);
     p.addDetector(mixer2, 3);
 
-    p.setTime(12);
+    p.setTime(13);
 
     Solver s(p);
+    Timer t;
     s.setObjective("min size");
+    
+    t.setStartTime();
     s.solve();
+    t.setEndTime();
     s.print("example_multi_mix.txt");
+    t.print("example_multi_mix_time.txt");
 
     cout << endl;
 }

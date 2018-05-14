@@ -19,9 +19,14 @@ void TestCase::exampleDetect()
     p.setTime(6);
 
     Solver s(p);
+    Timer t;
     s.setObjective("prove");
+    
+    t.setStartTime();
     s.solve();
+    t.setEndTime();
     s.print("example_detect.txt");
+    t.print("example_detect_time.txt");
 
     cout << endl;
 }

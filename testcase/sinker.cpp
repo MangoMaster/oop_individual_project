@@ -4,9 +4,9 @@
 using namespace std;
 using namespace DMFB;
 
-void TestCase::exampleMixerMix()
+void TestCase::exampleSinker()
 {
-    cout << "Solving mixer mix example..." << endl;
+    cout << "Solving sinker example..." << endl;
 
     Profile p;
 
@@ -22,32 +22,39 @@ void TestCase::exampleMixerMix()
     dropletVec2.push_back(droplet2);
     p.addDispenser(dropletVec2);
 
+    Mixer mixer1(droplet1, droplet2, 2, 3, 3, "mixer1");
+    p.addMixer(mixer1);
+    p.addDetector(mixer1, 4);
+
     Droplet droplet3("droplet3");
     p.addDroplet(droplet3);
     vector<Droplet> dropletVec3;
     dropletVec3.push_back(droplet3);
     p.addDispenser(dropletVec3);
 
-    Mixer mixer1(droplet1, droplet2, 2, 2, 3, "mixer1");
-    p.addMixer(mixer1);
-    Detector detector1(mixer1, 2);
-    p.addDetector(detector1);
+    Droplet droplet4("droplet4");
+    p.addDroplet(droplet4);
+    vector<Droplet> dropletVec4;
+    dropletVec4.push_back(droplet4);
+    p.addDispenser(dropletVec4);
 
-    Mixer mixer2(droplet3, mixer1, 4, 1, 4, "mixer2");
+    Mixer mixer2(droplet3, droplet4, 2, 2, 3, "mixer2");
     p.addMixer(mixer2);
     p.addDetector(mixer2, 3);
+
+    p.setSinkerNum(1);
 
     p.setTime(13);
 
     Solver s(p);
     Timer t;
     s.setObjective("min size");
-    
+
     t.setStartTime();
     s.solve();
     t.setEndTime();
-    s.print("example_mixer_mix.txt");
-    t.print("example_mixer_mix_time.txt");
+    s.print("example_sinker.txt");
+    t.print("example_sinker_time.txt");
 
     cout << endl;
 }

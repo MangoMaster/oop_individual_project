@@ -82,9 +82,14 @@ void TestCase::examplePcr()
     p.setTime(20);
 
     Solver s(p);
+    Timer t;
     s.setObjective("min size");
+    
+    t.setStartTime();
     s.solve();
+    t.setEndTime();
     s.print("example_pcr.txt");
+    t.print("example_pcr_time.txt");
 
     cout << endl;
 }

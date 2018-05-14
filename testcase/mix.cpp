@@ -28,9 +28,14 @@ void TestCase::exampleMix()
     p.setSize(2, 3);
 
     Solver s(p);
+    Timer t;
     s.setObjective("min time");
+    
+    t.setStartTime();
     s.solve();
+    t.setEndTime();
     s.print("example_mix.txt");
+    t.print("example_mix_time.txt");
 
     cout << endl;
 }

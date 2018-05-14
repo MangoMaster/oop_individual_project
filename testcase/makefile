@@ -12,10 +12,10 @@ $(TARGET): $(OBJECTS) main.o $(SRCLIB) $(Z3LIB) $(HEADERS)
 	g++ $(OBJECTS) main.o $(SRCLIB) $(Z3LIB) -o $(TARGET)
 
 main.o: main.cxx $(HEADERS) $(SRCLIB) $(Z3LIB)
-	g++ $< -c $(INCLUDES) -w -o $@
+	g++ $< -c $(INCLUDES) -w -std=c++11 -o $@
 
 %.o: %.cpp $(HEADERS) $(SRCLIB) $(Z3LIB)
-	g++ $< -c $(INCLUDES) -w -o $@
+	g++ $< -c $(INCLUDES) -w -std=c++11 -o $@
 
 .PHONY: clean
 clean: 

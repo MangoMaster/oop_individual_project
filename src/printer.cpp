@@ -166,7 +166,7 @@ void Printer::printDetectingModel(const z3::model &mdl, ostream &fout) const
             if (mdl.eval(exprVec[sequenceNum]).get_numeral_int() == 1)
             {
                 fout << "    droplet_number_" << d
-                     << "  droplet_name_\"" << pf.getDropletVec()[d].getName()
+                     << "  droplet_name_\"" << pf.getDropletVec()[d].getName() << "\""
                      << "  time_" << t
                      << endl;
             }
