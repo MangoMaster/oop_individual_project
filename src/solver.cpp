@@ -15,7 +15,7 @@ namespace DMFB
 
 Solver::Solver(Profile &p, const std::string &o /* = ""*/)
     : pf(p), objective(o), cxt(), exprVec(cxt), solv(cxt),
-      formu(pf, cxt, exprVec), prov(pf, exprVec, formu, cxt, solv), prin(pf, exprVec, formu, cxt, solv)
+      formu(pf, cxt, exprVec), prov(pf, exprVec, formu, cxt, solv), prin(pf, exprVec, formu, cxt, solv, resu)
 {
     assert(o.compare("") == 0 || o.compare("prove") == 0 || o.compare("min time") == 0 || o.compare("min size") == 0);
 }
@@ -23,52 +23,64 @@ Solver::Solver(Profile &p, const std::string &o /* = ""*/)
 void Solver::solve()
 {
     checkReadyForSolve();
-    cout << "objective:" << getObjective() << endl;
+    cout << "objective: " << getObjective() << endl;
     if (objective.compare("prove") == 0)
     {
         int pfX, pfY;
         pf.getSize(pfX, pfY);
         assert(pfX >= 0 && pfY >= 0 && pf.getTime() >= 0);
-        cout << "size:"
+        cout << "size: "
              << "(" << pfX << "," << pfY << ")" << endl;
-        cout << "time:" << pf.getTime() << endl;
+        cout << "time: " << pf.getTime() << endl;
         cout << "Solving..." << endl;
+        Timer t1;
+        t1.setStartTime();
         _solve();
+        t1.setEndTime();
+        cout << "\texecuting time: " << t1.getDuration() << " s" << endl;
     }
     else if (objective.compare("min time") == 0)
     {
         int pfX, pfY;
         pf.getSize(pfX, pfY);
         assert(pfX >= 0 && pfY >= 0);
-        cout << "size:"
+        cout << "size: "
              << "(" << pfX << "," << pfY << ")" << endl;
         //loop and increase time
         for (int tempTime = 1; tempTime <= MAXTIME; ++tempTime)
         {
             pf.setTime(tempTime);
-            cout << "Solving...\tNow time:" << tempTime << endl;
+            cout << "Solving...\tNow time:  " << tempTime << endl;
+            Timer t1;
+            t1.setStartTime();
             _solve();
-            if (solv.check() == sat)
+            t1.setEndTime();
+            cout << "\texecuting time: " << t1.getDuration() << " s" << endl;
+            if (resu == sat)
                 break;
         }
     }
     else if (objective.compare("min size") == 0)
     {
         assert(pf.getTime() != 0);
-        cout << "time:" << pf.getTime() << endl;
+        cout << "time: " << pf.getTime() << endl;
         //loop and increase size
         for (int tempY = 1; tempY <= MAXLENGTH; ++tempY)
         {
             for (int tempX = tempY; tempX <= MAXLENGTH; ++tempX) // x>=y
             {
                 pf.setSize(tempX, tempY);
-                cout << "Solving...\tNow size:"
+                cout << "Solving...\tNow size: "
                      << "(" << tempX << "," << tempY << ")" << endl;
+                Timer t1;
+                t1.setStartTime();
                 _solve();
-                if (solv.check() == sat)
+                t1.setEndTime();
+                cout << "\texecuting time: " << t1.getDuration() << " s" << endl;
+                if (resu == sat)
                     break;
             }
-            if (solv.check() == sat)
+            if (resu == sat)
                 break;
         }
     }
@@ -85,6 +97,7 @@ void Solver::_solve()
 {
     formu.formulate();
     prov.prove();
+    resu = solv.check();
 }
 
 void Solver::checkReadyForSolve()

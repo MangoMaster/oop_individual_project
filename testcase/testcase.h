@@ -2,7 +2,6 @@
 #define EXAMPLE_H_
 
 #include "solver.h"
-#include "timer.h"
 
 class TestCase
 {

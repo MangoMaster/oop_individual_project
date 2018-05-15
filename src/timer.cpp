@@ -32,7 +32,7 @@ void Timer::print(const std::string &printFile) const
     fout.open(printFile.c_str());
 
     cout << "Printing into file...\t" << printFile << endl;
-    fout << "executing time:  " << getDuration() << " s" << endl;
+    fout << "total executing time: " << getDuration() << " s" << endl;
 
     fout.close();
 }

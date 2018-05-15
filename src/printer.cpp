@@ -10,8 +10,8 @@ using namespace z3;
 namespace DMFB
 {
 
-Printer::Printer(const Profile &p, const z3::expr_vector &e, const Formulator &f, z3::context &c, z3::solver &s)
-    : pf(p), exprVec(e), formu(f), cxt(c), solv(s)
+Printer::Printer(const Profile &p, const z3::expr_vector &e, const Formulator &f, z3::context &c, z3::solver &s, z3::check_result &r)
+    : pf(p), exprVec(e), formu(f), cxt(c), solv(s), resu(r)
 {
 }
 
@@ -21,9 +21,9 @@ void Printer::print(const string &printFile) const
     fout.open(printFile.c_str());
 
     cout << "Printing into file...\t" << printFile << endl;
-    fout << solv.check() << endl
+    fout << resu << endl
          << endl;
-    if (solv.check() == sat)
+    if (resu == sat)
     {
         printProfile(fout);
         model mdl = solv.get_model();

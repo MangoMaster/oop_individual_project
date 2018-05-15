@@ -16,7 +16,7 @@ namespace DMFB
 class Printer
 {
 public:
-  Printer(const Profile &p, const z3::expr_vector &e, const Formulator &f, z3::context &c, z3::solver &s);
+  Printer(const Profile &p, const z3::expr_vector &e, const Formulator &f, z3::context &c, z3::solver &s, z3::check_result &r);
   ~Printer(){};
 
   /***********************main function************************/
@@ -28,6 +28,7 @@ private:
   const Formulator &formu;
   z3::context &cxt;
   z3::solver &solv;
+  z3::check_result &resu;
 
   /**********************assistant function**************************/
   void printModel(const z3::model &mdl, std::ostream &fout) const;

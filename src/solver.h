@@ -7,6 +7,7 @@
 #include "formulator.h"
 #include "prover.h"
 #include "printer.h"
+#include "timer.h"
 #include "z3++.h"
 
 namespace DMFB
@@ -45,6 +46,7 @@ private:
   z3::context cxt;
   z3::expr_vector exprVec;
   z3::solver solv;
+  z3::check_result resu;
 
   Formulator formu;
   Prover prov;

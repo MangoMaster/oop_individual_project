@@ -37,7 +37,7 @@ void TestCase::exampleMixerMix()
     p.addMixer(mixer2);
     p.addDetector(mixer2, 3);
 
-    p.setTime(13);
+    p.setTime(14);
 
     Solver s(p);
     Timer t;
