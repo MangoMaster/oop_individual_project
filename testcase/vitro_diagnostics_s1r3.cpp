@@ -79,6 +79,7 @@ void TestCase::exampleVitroDiagnosticsS1R3()
     s.print("example_vitro_diagnostics_s1r3_size43.txt");
     t.print("example_vitro_diagnostics_s1r3_size43_time.txt");*/
 
+    // (5, 3)可能因计算量过大无法解决
     p.setSize(5, 3);
     t.setStartTime();
     s.solve();

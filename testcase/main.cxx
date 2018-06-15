@@ -16,8 +16,14 @@ int main()
     cout << "Current local time and date: "
          << asctime(localtime(&rawtime))
          << endl;
-
-    TestCase::example();
+    try
+    {
+        TestCase::examplePcr();
+    }
+    catch (z3::exception &ex) // 补充exception
+    {
+        cout << "unexpected error: " << ex << "\n";
+    }
 
     return 0;
 }

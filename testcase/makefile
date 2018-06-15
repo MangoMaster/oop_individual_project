@@ -3,7 +3,7 @@ OBJECTS=$(SOURCES:%.cpp=%.o)
 HEADERS=$(wildcard *.h)
 TARGET=testcase.exe 
 SRCLIB=$(wildcard ../src/*.a)
-Z3LIB=$(wildcard *.lib *.dll)
+Z3LIB=$(wildcard *.lib)
 INCLUDES=-I../src -I../z3/src/api/c++ -I../z3/src/api
 
 all: $(TARGET)

@@ -1,15 +1,11 @@
 SOURCES=$(wildcard *.cpp)
 OBJECTS=$(SOURCES:%.cpp=%.o)
 HEADERS=$(wildcard *.h)
-LIB=src.a
-TARGET=DFMBSolver.exe 
-Z3LIB=$(wildcard *.lib *.dll)
+LIB=DFMBsrc.a
+Z3LIB=$(wildcard *.lib)
 INCLUDES=-I../z3/src/api/c++ -I../z3/src/api
 
-all: $(TARGET)
-
-$(TARGET): $(OBJECTS) $(Z3LIB) $(HEADERS)
-	g++ $(OBJECTS) $(Z3LIB) -o $(TARGET)
+all: $(LIB)
 
 %.o: %.cpp $(HEADERS)
 	g++ $< -c  $(INCLUDES) -std=c++11 -o $@
@@ -31,5 +27,4 @@ explain:
 	@echo "objects: $(OBJECTS)"
 	@echo "headers: $(HEADERS)"
 	@echo "z3lib: $(Z3LIB)"
-	@echo "targetlib: $(LIB)"
-	@echo "target: $(TARGET)"
+	@echo "target: $(LIB)"
