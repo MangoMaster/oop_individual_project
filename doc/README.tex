@@ -1,0 +1,311 @@
+\documentclass[UTF8, a4paper, titlepage]{ctexart}
+    \usepackage{}
+\begin{document}
+\title{One-pass Synthesis of Digital Microfluidic Biochips \\
+	软件设计文档}
+\author{魏家栋}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{简介}
+\subsection{目的}
+该软件设计文档描述了 One-pass Synthesis of Digital Microfluidic Biochips
+求解器的软件结构、系统设计、用法等。
+\subsection{适用范围}
+该软件适用于 Digital Microfluidic Biochips 的最优路径求解。%
+可以用于评估其它算法的优化程度。
+\subsection{文档概述}
+该文档首先定义了所用到的术语，然后对整个软件进行了一个概述。%
+接下来从宏观到微观介绍了软件的模块结构。%
+然后站在用户的角度，介绍了软件的使用方法。%
+接着介绍了软件的测试用例和得到的一些结果。%
+最后，介绍了软件所使用的编程技巧、面向对象思想和未来的可能拓展方向。%
+\subsection{术语定义}
+\begin{description}
+	\item[Digital Microfluidic Biochips] 数字微流控生物芯片，包括一个二维芯片和一些外接设备，%
+	例如下面提到的 dispenser 和 detector 。
+	\item[droplet] 液滴，例如某些样本、反应物、试剂等。
+	\item[mixer] droplet 的混合物，由两个 droplet 混合产生，混合会占用一定的时间和芯片空间，%
+	混合结束后会产生一个新的 droplet 。
+	\item[dispenser] 位于芯片四个边缘或芯片上，产生 droplet 。
+	\item[detector] 检测某个droplet，该droplet一般是由mixer产生的。%
+	检测需要占用一定的时间和芯片空间。
+	\item[sinker] 位于芯片四个边缘或芯片上，使 droplet 消失。
+\end{description}
+
+\section{软件概述}
+Digital Microfluidic Biochips 拥有广阔的前景。%
+一些生物实验，例如 PCR mixing, Vitro Diagnostics Assay, Protein Assay 等，%
+已经被成功应用于 Digital Microfluidic Biochips 。%
+
+该软件实现了 Digital Microfluidic Biochips 的从布图到路径规划的整套方案的最优解的求解。%
+目前来看，还没有令人满意的近似算法。%
+因此最优解能够大大节省相关企业和实验室的人力、物力和时间开销。%
+此外，最优解还能够用于评估其它相关算法的优化程度。%
+尽管求解的内存占用较大、求解时间较长，%
+但在高性能计算机快速发展的今天，内存和时间占用带来的困难将越来越小。%
+因此，该软件在未来具有广阔的应用前景。%
+
+\section{软件结构}
+\subsection{模块结构}
+该软件包括两大模块：对象模块和求解模块。%
+对象模块将 droplet, mixer, dispenser, detector 等进行数据抽象。%
+求解模块利用 z3 SMT求解器求解最优解。%
+最终输出从布图到路径规划的 Digital Microfluidic Biochips 整套方案的最优解。%
+
+\subsection{模块深探}
+\subsubsection{数据结构}
+对象模块将实际问题域映射到求解域。%
+它包括以下类：%
+\begin{description}
+	\item[Droplet] 封装 droplet 的名字
+	\item[Mixer] mixer 类继承于 droplet 类，作为混合后产生的 droplet 。%
+	封装 mixer 的两个混合的 droplet ，混合时所占用的时间和芯片空间。
+	\item[Dispenser] 封装 dispenser 所能产生的 droplet 。
+	\item[Detector] 封装 detector 所检测的 droplet 和检测所占用的时间。
+	\item[Profile] 封装上述四类对象的数组，封装 sinker 的数量，%
+	以及给定的芯片大小和/或总限制时间。
+\end{description}
+前四类对象均含有一个独一无二的数字代表它们自己。
+\subsubsection{求解过程}
+求解模块对给定问题利用 z3 SMT求解器求解最优解。%
+
+首先是类 Solver ，它起到“提纲挈领”的作用，%
+包含了上面提到的类 Profile 和下面将要提到的类 Formulator 和 Prover ,%
+以及所利用的 z3 SMT求解器的相关变量。%
+它有三种模式：%
+证明模式("prove")，需要给定芯片大小和总限制时间，输出能否完成方案；%
+求解最小芯片大小模式("min size")，需要给定总限制时间，输出最小芯片大小；%
+求解最短时间模式("min time")，需要给定芯片大小，输出最短总时间。%
+在具体实现中，后两种模式通过循环递增芯片大小/总时间，转化成第一种模式。%
+而证明模式则依次调用 Formulator 和 Prover 将问题格式化，%
+再利用 z3 SMT求解器进行求解。
+
+然后是类 Formulator ，%
+它将问题格式化成 z3 SMT求解器所能够识别的问题，也就是可满足性问题。%
+例如，在每个芯片位置，每个时间，每个 droplet 存在几个，%
+将被格式化为一个 int ，%
+问题转化为找到一个 int 满足下面 Prover 给定的限制条件。%
+
+然后是类 Prover ，%
+它的作用是将限制条件进行格式化，输入到 z3 SMT求解器中。%
+例如， droplet 不能重叠，不能有N9的邻居，%
+甚至前一个时间和后一个时间的邻居都不行(fluidic constraints)，等等。%
+这些限制条件还包括对 droplet 的移动、混合、检测、消失等过程的限制。%
+例如， droplet 一次只能移动一格，%
+混合和检测需要占用一定的时间和芯片空间，等等。%
+
+Formulator 和 Prover 之间有交互，%
+例如 Formulator 为 Prover 提供一个将所有 Profile 中的对象格式化好的数组，%
+而 Prover 会调用 Formulator 的函数进一步知道%
+它分别把某个 droplet ， mixer 或 detector 等放在数组的什么位置。%
+\subsubsection{其他}
+还有另外两个辅助类，分别是类 Timer 和类 Printer 。%
+从名字显而易见，类 Timer 负责计时，%
+用以评估该方法的可行性，%
+而类 Printer 负责输出结果，%
+包括根据目标所得到的结论(证实/证伪，最小芯片大小，最短时间)，%
+如果得到一组可行解则给出该可行解，%
+以及求解所花费的时间。%
+
+\section{使用方法}
+该软件需要用户编写主函数使用。%
+需要包含 src 文件夹中的 "solver.h" 头文件，%
+所有软件涉及的类都在命名空间 DMFB 中，%
+编译时需要包含 DFMBsrc.a ，%
+该静态库可在 src 文件夹下执行命令 make 生成。%
+
+具体的主函数的编写方法可以参考测试用例。%
+首先定义一个 Profile 的变量。%
+然后根据需要定义 Droplet, Mixer, Dispenser, Detector 等变量，%
+并将它们 add 到 Profile 的变量中。%
+接下来利用该 Profile 的变量定义一个 Solver 的变量。%
+根据需要确定 Solver 的模式，%
+并根据 Solver 的模式设定 Profile 变量的芯片大小和/或总限制时间。%
+在一切准备就绪后，调用 Solver 变量的函数 solve() 进行求解，%
+然后调用 Solver 变量的函数 print() 输出结果。%
+
+值得注意的是，
+\begin{itemize}
+	\item 求解过程计算时间可能较长，消耗内存可能较大。%
+	\item 对 Profile 变量的改动会改变由该变量定义的对应的 Solver 变量。%
+	\item 定义的 Droplet, Mixer, Dispenser, Detector 等变量不能为常量。%
+\end{itemize}
+
+\section{测试用例}
+\subsection{测试用例使用方法}
+首先进入 src 文件夹，执行命令 make ，生成 DFMBsrc.a 。%
+然后进入 testcase 文件夹，执行命令make ，生成 testcase.exe 。%
+运行 testcase.exe ，即可检验测试用例。%
+\subsection{测试用例}
+首先是一些对软件功能实现的测试用例。%
+droplet 和 dispenser 的使用非常基本，在每个测试用例中均被测试。%
+函数 exampleDetect() 测试了 detector 的使用。%
+函数 exampleMix() 测试了 mixer 的使用。%
+函数 exampleMultiMix() 测试了多个 mixer 的使用。%
+函数 exmapleMixerMix() 测试了由 mixer 产生的 droplet 参与另一个 mixer 的生成这一过程。%
+函数 exampleSinker() 测试了 sinker 的使用。%
+
+然后是一些对软件效率评估的测试用例。%
+主要使用 Vitro Diagnostics Assay 进行测试。%
+Vitro Diagnostics Assay 的 droplet 包括 m 类 sample 和 n 类 reagent ，%
+每类 sample 和每类 reagent 都需要进行混合，%
+一共生成 m * n 个 mixer ，%
+然后对每个 mixer 混合结束后生成的 droplet 进行检测。%
+本测试中设定同一类的 sample 或者同一类的 reagent 由同一个 dispenser 生成，%
+每次混合过程占用芯片大小为 1 * 2 ，占用时间为 2 个单位时间，%
+对 mixer 混合结束后生成的 droplet 检测时间为 3 个单位时间，%
+不考虑 sinker 。%
+测试用例共测试 1 * sample, 2 * reagent 、 %
+1 * sample, 3 * reagent 、 %
+2 * sample, 1 * reagent 、 %
+2 * sample, 2 * reagent 和 %
+2 * sample, 3 * reagent 五种情况，%
+对每种情况，设定不同的芯片大小求最短总时间。%
+除了使用 Vitro Diagnostics Assay 进行测试之外，%
+还使用PCR mixing 进行测试。%
+Protein Assay 由于过于复杂，预计测试结果会超时超内存，没有进行测试。%
+\subsection{测试结果}
+测试在 Windows10 教育版64位系统， %
+Intel Core i5-7200U CPU @2.50GHZ 2.71GHZ ，%
+8G内存的电脑上进行。%
+通过 g++ 5.1.0 加参数 -std=c++11 编译出可执行程序。%
+
+软件功能实现的测试用例表明，在测试的范围内，%
+软件达到了预期的目的。%
+具体得到的路径结果和花费的时间参见 testcase 中相应 .txt 文件。%
+
+软件效率评估的测试用例得到的结果并不太乐观。%
+由于原论文并没有给出其测试的具体实现，比如 mixer 产生的液滴的检测时间等等数据并没有给出，%
+因此下面我们并不对该软件和原论文的结果进行比较。%
+\begin{itemize}
+	\item Vitro Diagnostics Assay 1 * sample, 2 * reagent 测试中，%
+	      \begin{itemize}
+		      \item 3 * 1 芯片大小，在 20 个时间单位内无路径，计算时间 4.78179 s
+		      \item 2 * 2 芯片大小，在 20 个时间单位内无路径，计算时间 10.2354 s
+		      \item 3 * 2 芯片大小，在 20 个时间单位内无路径，计算时间 140.577 s
+		      \item 4 * 2 芯片大小，最短总时间 10 个单位，计算时间 26.7161 s
+		      \item 3 * 3 芯片大小，最短总时间 10 个单位，计算时间 56.0944 s
+		      \item 5 * 2 芯片大小，最短总时间 10 个单位，计算时间 130.795 s
+		      \item 4 * 3 芯片大小，最短总时间 10 个单位，计算时间 156.799 s
+		      \item 5 * 3 芯片大小，最短总时间 10 个单位，计算时间 342.045 s
+		      \item 4 * 4 芯片大小，最短总时间 10 个单位，计算时间 364.382 s
+	      \end{itemize}
+	      具体得到的路径结果参见 testcase 中相应 .txt 文件。%
+	      由此可见，随着芯片大小的增大，计算时间基本上相应增大。%
+	      一个例外出现在从无解到有解的转变，计算时间反而下降。%
+	      这是符合预期的。%
+	      得到某个最短总时间之后，程序便不再继续验证后续的时间单位，%
+	      因此计算时间会有所下降。%
+	\item Vitro Diagnostics Assay 1 * sample, 3 * reagent 测试中，%
+	      \begin{itemize}
+		      \item 3 * 3 芯片大小，最短总时间 14 个单位，计算时间 1127.69 s
+		      \item 5 * 2 芯片大小，在 20 个时间单位内无路径，计算时间 10644.3 s
+		      \item 4 * 3 芯片大小，最短总时间 13 个单位，计算时间 5590.15 s
+		      \item 5 * 3 芯片大小，超过系统限制内存 2GB，超内存时计算时间约 18 h
+	      \end{itemize}
+	      具体得到的路径结果参见 testcase 中相应 .txt 文件。%
+	      由此可见，并非随着芯片面积的增大，最短总时间一定减小，%
+	      最短总时间也与芯片的长宽比有关。%
+	      并且，在 1 * sample, 3 * reagent, 5 * 3 芯片大小时，%
+	      问题域已经过大，超过内存限制。%
+	      计算时间也变得无法忍受。%
+	\item Vitro Diagnostics Assay 2 * sample, 1 * reagent 测试中，%
+	      \begin{itemize}
+		      \item 3 * 1 芯片大小，在 20 个时间单位内无路径，计算时间 12.6193 s
+		      \item 2 * 2 芯片大小，在 20 个时间单位内无路径，计算时间 33.8433 s
+		      \item 3 * 2 芯片大小，在 20 个时间单位内无路径，计算时间 139.671 s
+		      \item 4 * 2 芯片大小，在 20 个时间单位内无路径，计算时间 219.273 s
+		      \item 3 * 3 芯片大小，最短总时间 10 个单位，计算时间 118.122 s
+		      \item 5 * 2 芯片大小，在 20 个时间单位内无路径，计算时间 342.912 s
+		      \item 4 * 3 芯片大小，最短总时间 10 个单位，计算时间 829.445 s
+		      \item 5 * 3 芯片大小，最短总时间 10 个单位，计算时间  959.216 s
+		      \item 4 * 4 芯片大小，最短总时间 10 个单位，计算时间 1442.8 s
+	      \end{itemize}
+	      具体得到的路径结果参见 testcase 中相应 .txt 文件。%
+	      和 1 * sample, 2 * reagent 测试类似的是，%
+	      随着芯片大小的增大，计算时间基本上相应增大。%
+	      例外出现在从无解到有解的转变，计算时间反而下降。%
+	      相比之下， 2 * sample, 1 * reagent 在每个芯片大小上的计算时间%
+	      基本都大于相应芯片大小的 1 * sample, 2 * reagent 测试。%
+	      这并不符合预期，可能原因是 2 * sample, 1 * reagent 测试用例出现了一个小错误。%
+	      和 1 * sample, 3 * reagent 测试类似的是，%
+	      并非随着芯片面积的增大，最短总时间一定减小，%
+	      最短总时间也与芯片的长宽比有关。%
+	\item Vitro Diagnostics Assay 2 * sample, 2 * reagent 测试中，%
+	      \begin{itemize}
+		      \item 3 * 2 芯片大小，超过系统限制内存 2GB，超内存时为第 18 个时间单位，计算时间约 11 min
+		      \item 4 * 2 芯片大小，超过系统限制内存 2GB，超内存时为第 15 个时间单位，计算时间约 10 min
+		      \item 3 * 3 芯片大小，超过系统限制内存 2GB，超内存时为第 12 个时间单位，计算时间约 8 min
+		      \item 5 * 2 芯片大小，超过系统限制内存 2GB，超内存时为第 13 个时间单位，计算时间约 9 min
+	      \end{itemize}
+	      具体得到的路径结果参见 testcase 中相应 .txt 文件。%
+	      由此可见，在 2 * sample, 2 * reagent 时，%
+	      由于内存的限制，测试基本已经无法得出有效结果。%
+	      此外，随着芯片大小的增大，超内存时时间单位基本呈减小趋势，%
+	      计算时间也基本呈减小趋势。%
+	      这提醒我们，该软件的效率在液滴较多、芯片较大、总限制时间较大时，%
+	      该软件变得不再适用。%
+	\item Vitro Diagnostics Assay 2 * sample, 3 * reagent 测试中，%
+	      \begin{itemize}
+		      \item 3 * 2 芯片大小，超过系统限制内存 2GB，超内存时为第 8 个时间单位，计算时间约 3 min
+		      \item 4 * 2 芯片大小，超过系统限制内存 2GB，超内存时为第 7 个时间单位，计算时间约 1 min
+		      \item 3 * 3 芯片大小，超过系统限制内存 2GB，超内存时为第 7 个时间单位，计算时间约 1 min
+		      \item 5 * 2 芯片大小，超过系统限制内存 2GB，超内存时为第 7 个时间单位，计算时间约 1 min
+	      \end{itemize}
+	      具体得到的路径结果参见 testcase 中相应 .txt 文件。%
+	      和 2 * sample, 2 * reagent 测试类似的是，%
+	      由于内存的限制，测试基本已经无法得出有效结果。%
+	      相比之下， 2 * sample, 2 * reagent 在每个芯片大小上超过系统限制内存时%
+	      时间单位和计算时间都显著减小。%
+	      这进一步反应了该软件对应用问题域大小的极度敏感性。
+\end{itemize}
+这些测试表明，该软件在问题域较大时变得不再适用，%
+对内存和计算时间的消耗均较高。%
+因此，如果希望该软件能够发挥用武之地，%
+一方面需要简化问题，将一个芯片大小单位和一个时间单位取得较大，%
+另一方面可能需要高性能计算机进行计算。%
+
+\section{编程技巧和面向对象思想}
+首先，该软件利用了数据封装。%
+类 Droplet, Mixer, Dispenser, Detector 等均进行了数据的封装。%
+类 Timer 和 Printer 封装了某个特定的功能。%
+
+其次，该软件利用了继承，类 Mixer 继承于类 Droplet ，%
+使得 mixer 混合结束后生成的 droplet 易于表示。%
+
+然后，该软件在设计过程中尽可能使得一个类拥有唯一的功能。%
+比如，将 z3 SMT求解器所需要形式化的问题分为两部分，问题域和限制条件，%
+分别交给 Formulator 和 Prover 进行处理。%
+
+\section{未来拓展}
+由于时间紧迫，很多希望实现的拓展并没有能够很好的实现。%
+
+首先是对路径正确性的评估。%
+目前主要依靠人手绘路径图进行正确性的评估，%
+效率较低，也无法保证评估的正确。%
+一个拓展方向是增加有关路径正确性评估的函数或类。%
+
+然后是效率的优化。%
+由于对 z3 SMT求解器并不特别熟悉，%
+目前的软件与 z3 SMT求解器的配合可能并不太好，%
+增加了问题求解的难度、内存消耗和时间。%
+希望未来能通过该软件与 z3 SMT求解器更好的配合，进一步提升效率。%
+
+还有是原问题的拓展。%
+原问题还有许多可以延伸的地方，%
+比如增加在芯片上的 dispenser ，增加 pin 等等。%
+这些原问题的拓展可以作为该软件的一个拓展方向。%
+
+还有是限制条件的选择/增加。%
+目前如果需要选择使用或不使用哪些限制条件，%
+需要手动修改类 Prover 的代码。%
+未来可以增加对限制条件的选择，并且增加一些其他限制条件，%
+例如将N9邻居改为N5邻居，等等。%
+
+再比如人机交互界面的设计。%
+时间紧迫，也从未接触过Qt等类似软件，%
+人机交互界面的计划被暂时搁置，只能通过 .txt 文件查看求解时间、最优解等等。%
+
+\end{document}

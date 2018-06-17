@@ -72,28 +72,28 @@ void TestCase::exampleVitroDiagnosticsS2R2()
     // maybe all out of memory
 
     // out of memory
-    /*p.setSize(3, 2);
+    p.setSize(3, 2);
     t.setStartTime();
     s.solve();
     t.setEndTime();
     s.print("example_vitro_diagnostics_s2r2_size32.txt");
-    t.print("example_vitro_diagnostics_s2r2_size32_time.txt");*/
+    t.print("example_vitro_diagnostics_s2r2_size32_time.txt");
 
     // out of memory
-    /*p.setSize(4, 2);
+    p.setSize(4, 2);
     t.setStartTime();
     s.solve();
     t.setEndTime();
     s.print("example_vitro_diagnostics_s2r2_size42.txt");
-    t.print("example_vitro_diagnostics_s2r2_size42_time.txt");*/
+    t.print("example_vitro_diagnostics_s2r2_size42_time.txt");
 
     // out of memory
-    /*p.setSize(3, 3);
+    p.setSize(3, 3);
     t.setStartTime();
     s.solve();
     t.setEndTime();
     s.print("example_vitro_diagnostics_s2r2_size33.txt");
-    t.print("example_vitro_diagnostics_s2r2_size33_time.txt");*/
+    t.print("example_vitro_diagnostics_s2r2_size33_time.txt");
 
     // out of memory
     p.setSize(5, 2);

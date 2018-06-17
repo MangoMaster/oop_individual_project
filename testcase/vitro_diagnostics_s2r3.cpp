@@ -93,36 +93,36 @@ void TestCase::exampleVitroDiagnosticsS2R3()
     Timer t;
 
     // out of memory
-    /*p.setSize(3, 2);
+    p.setSize(3, 2);
     t.setStartTime();
     s.solve();
-    t.setEndTime();非常
+    t.setEndTime();
     s.print("example_vitro_diagnostics_s2r3_size32.txt");
-    t.print("example_vitro_diagnostics_s2r3_size32_time.txt");*/
+    t.print("example_vitro_diagnostics_s2r3_size32_time.txt");
 
     // out of memory
-    /*p.setSize(4, 2);
+    p.setSize(4, 2);
     t.setStartTime();
     s.solve();
     t.setEndTime();
     s.print("example_vitro_diagnostics_s2r3_size42.txt");
-    t.print("example_vitro_diagnostics_s2r3_size42_time.txt");*/
+    t.print("example_vitro_diagnostics_s2r3_size42_time.txt");
 
     // out of memory
-    /*p.setSize(3, 3);
+    p.setSize(3, 3);
     t.setStartTime();
     s.solve();
     t.setEndTime();
     s.print("example_vitro_diagnostics_s2r3_size33.txt");
-    t.print("example_vitro_diagnostics_s2r3_size33_time.txt");*/
+    t.print("example_vitro_diagnostics_s2r3_size33_time.txt");
 
     // out of memory
-    /*p.setSize(5, 2);
+    p.setSize(5, 2);
     t.setStartTime();
     s.solve();
     t.setEndTime();
     s.print("example_vitro_diagnostics_s2r3_size52.txt");
-    t.print("example_vitro_diagnostics_s2r3_size52_time.txt");*/
+    t.print("example_vitro_diagnostics_s2r3_size52_time.txt");
 
     p.setSize(4, 3);
     t.setStartTime();

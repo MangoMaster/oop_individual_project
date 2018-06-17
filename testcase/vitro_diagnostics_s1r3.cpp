@@ -58,7 +58,7 @@ void TestCase::exampleVitroDiagnosticsS1R3()
     s.setObjective("min time");
     Timer t;
 
-    /*p.setSize(3, 3);
+    p.setSize(3, 3);
     t.setStartTime();
     s.solve();
     t.setEndTime();
@@ -77,7 +77,7 @@ void TestCase::exampleVitroDiagnosticsS1R3()
     s.solve();
     t.setEndTime();
     s.print("example_vitro_diagnostics_s1r3_size43.txt");
-    t.print("example_vitro_diagnostics_s1r3_size43_time.txt");*/
+    t.print("example_vitro_diagnostics_s1r3_size43_time.txt");
 
     // (5, 3)可能因计算量过大无法解决
     p.setSize(5, 3);

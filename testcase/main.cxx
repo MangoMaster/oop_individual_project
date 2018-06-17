@@ -9,8 +9,6 @@ using namespace DMFB;
 
 int main()
 {
-    freopen("console.txt", "a", stdout);
-
     time_t rawtime;
     time(&rawtime);
     cout << "Current local time and date: "
@@ -18,7 +16,7 @@ int main()
          << endl;
     try
     {
-        TestCase::examplePcr();
+        TestCase::example();
     }
     catch (z3::exception &ex) // 补充exception
     {
